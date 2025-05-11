@@ -1,0 +1,169 @@
+.imageSection img {
+  height: 100vh;
+  width: 100vw;
+  object-fit: cover;
+  filter: contrast(130%);
+}
+.loginSection {
+  background: linear-gradient(rgba(0, 0, 0, 0.585), #5d6d7ea5);
+  backdrop-filter: blur(10px);
+  width: fit-content;
+  height: fit-content;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  padding: 2rem;
+  border-radius: 30px;
+  gap: 3rem;
+  border: 1px solid white;
+}
+.loginSection > img {
+  position: absolute;
+  height: 15rem;
+  top: -4rem;
+  right: -5rem;
+}
+
+.signInBtn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.8rem;
+}
+.signInBtn img {
+  height: 2.5rem;
+}
+.signInBtn h3 {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 550;
+  font-size: 1.1rem;
+}
+.signInBtn {
+  background-color: white;
+  border-radius: 50px;
+  margin: 0 auto;
+  width: 80%;
+  border: none;
+  box-shadow: inset -0.25rem -0.25rem 1rem rgba(0, 0, 0, 0.594);
+  transition: 0.2s all ease-in-out;
+  cursor: pointer;
+}
+.signInBtn:hover {
+  background-color: rgba(0, 0, 0, 0.823);
+  color: white;
+}
+.signInBtn:active {
+  transform: scale(0.98);
+  background-color: rgba(0, 0, 0, 0.823);
+  color: white;
+  opacity: 0.5;
+}
+.loginSection h1 {
+  font-size: 3.5rem;
+  font-family: "Tagesschrift", system-ui;
+  font-weight: 400;
+  font-style: normal;
+  margin: 0;
+  text-align: center;
+  color: white;
+}
+.loginSection h1 span {
+  color: gold;
+  text-shadow: 0.2rem 0.2rem 0.3rem black;
+}
+.loginSection p {
+  font-family: cursive;
+  font-size: 0.9rem;
+  text-align: center;
+  color: white;
+}
+
+.container {
+  display: flex;
+  height: 100vh;
+  font-family: "Segoe UI", sans-serif;
+  background-color: #1c1c1e;
+  color: #fff;
+}
+
+.sidebar {
+  width: 220px;
+  background-color: #2a2a2d;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  border-right: 1px solid #3a3a3d;
+  position: relative;
+}
+.sidebar button:last-child{
+  background-color: red;
+  position: absolute;
+  bottom: 0;
+  width: 85%;
+}
+
+.tabButton {
+  padding: 12px 20px;
+  margin-bottom: 15px;
+  background: transparent;
+  border: 1px solid #444;
+  border-radius: 8px;
+  color: #ccc;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tabButton:hover {
+  background-color: #333;
+}
+
+.active {
+  background-color: rebeccapurple;
+  color: white;
+  border-color: rebeccapurple;
+}
+
+.content {
+  flex: 1;
+  padding: 40px;
+  position: relative;
+}
+
+.formWrapper {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.formWrapper h2 {
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+.generateBtn {
+  padding: 10px 20px;
+  background-color: rebeccapurple;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.generateBtn:hover {
+  background-color: rgb(127, 30, 224);
+}
+
+.roomIdDisplay {
+  margin-top: 20px;
+  background-color: #29292c;
+  padding: 15px;
+  border-radius: 8px;
+  font-size: 18px;
+  border: 1px solid #444;
+}

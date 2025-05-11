@@ -1,0 +1,114 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin: 0 auto;
+  z-index: 1;
+  width: 90%;
+}
+
+.container h1 {
+  font-size: 3rem;
+  font-family: "Tagesschrift", system-ui;
+  font-weight: bolder;
+  margin: 0.5rem 0;
+  text-align: center;
+}
+
+.backgroundImage {
+  height: 100vh;
+  width: 100vw;
+  object-fit: cover;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+.chosenAvatar {
+  background: linear-gradient(#a8bce7, #e48db7);
+  height: 10rem;
+  width: 10rem;
+  border-radius: 50%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0.5rem 0.3rem black;
+}
+
+.avatar {
+  height: 100%;
+  width: auto;
+  transform: translateY(8rem);
+  animation: revealAvatar 0.5s ease-in-out forwards;
+}
+@keyframes revealAvatar {
+  from {
+    transform: translateY(8rem) scale(0.2);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0.8rem) scale(1);
+    opacity: 1;
+  }
+}
+
+.container form input {
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+  margin-top: 1rem;
+}
+
+.avatarContainer {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1rem;
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 1rem;
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.3);
+  border-radius: 1rem;
+  margin-top: 1rem;
+  backdrop-filter: blur(2.5px);
+}
+
+.availableAvatars {
+  height: 10rem;
+  width: 10rem;
+  object-fit: contain;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.availableAvatars:hover {
+  transform: scale(1.1);
+  filter: drop-shadow(4px 4px 1px rgba(0, 0, 0, 0.85)) brightness(1.2);
+}
+.submit {
+  padding: 0.8rem 2rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: linear-gradient(135deg, #5a78f0, #8298f8);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  box-shadow: 0 6px 20px rgba(90, 120, 240, 0.4);
+}
+
+.submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(90, 120, 240, 0.6);
+}
+
+.submit:active {
+  transform: translateY(1px);
+  box-shadow: 0 4px 15px rgba(90, 120, 240, 0.3);
+}

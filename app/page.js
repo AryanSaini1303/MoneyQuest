@@ -1,42 +1,68 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { supabase } from "@/lib/supabaseClient";
 import styles from "./page.module.css";
+import Background from "@/components/Background";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const [redirectURL, setRedirectURL] = useState("");
+  const [roomId, setRoomId] = useState("");
+  const [error, setError] = useState("");
+  const [submit, setSubmit] = useState(false);
+  const router = useRouter();
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      setRedirectURL(`${window.location.origin}/home`);
-    }
-  }, []);
-
-  const signIn = async () => {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: redirectURL, // now safely set after hydration
-      },
-    });
-    if (error) {
-      console.log(error);
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (roomId.trim() === "") {
+      setError("Room ID is required");
+      setSubmit(false);
+      setTimeout(() => {
+        setError("");
+      }, 1000);
       return;
     }
+    setError("");
+    setSubmit(true);
   };
+
+  useEffect(() => {
+    if (roomId.length != 0 && submit) {
+      const validateRoom = async () => {
+        const res = await fetch("/api/validateRoom", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ roomId }),
+        });
+        const data = await res.json();
+        console.log(data);
+        data.valid && router.push(`/home/${roomId}`);
+      };
+      validateRoom();
+    }
+  }, [roomId, submit]);
 
   return (
     <div className="wrapper">
       <div className={styles.container}>
-        <section className={styles.imageSection}>
-          <img src="/images/background.jpg" alt="background image" />
-        </section>
-        <section className={styles.loginSection}>
-          <button className={styles.signInBtn} onClick={signIn}>
-            <img src="/images/googleLogo.png" alt="google logo" />
-            <h3>Sign in with Google</h3>
-          </button>
+        <Background url={"background.jpg"} />
+        <section className={styles.roomSection}>
+          <form onSubmit={handleSubmit} className={styles.formContainer}>
+            <h2 className={styles.title}>Enter Room ID</h2>
+            <input
+              type="text"
+              className={styles.input}
+              name="roomId"
+              placeholder={error ? error : "Enter your Room ID"}
+              value={roomId}
+              onChange={(e) => setRoomId(e.target.value)}
+              style={error ? { "--placeholder-color": "red" } : null} // this is done to change placeholder color dynamically, for this to work you first have to define "--placeholder-color" in css in ".input" and use it in ".input::placeholder"
+              required
+            />
+            {/* {error && <p className={styles.error}>{error}</p>} */}
+            <button type="submit" className={styles.button}>
+              Join
+            </button>
+          </form>
         </section>
       </div>
     </div>

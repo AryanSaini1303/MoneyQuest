@@ -3,9 +3,9 @@ import { supabase } from "@/lib/supabaseClient";
 export const POST = async (req) => {
   try {
     const body = await req.json();
-    const { email, members } = body;
+    const { id, members } = body;
     // console.log(email, members);
-    if (!email || !Array.isArray(members)) {
+    if (!id || !Array.isArray(members)) {
       return new Response(JSON.stringify({ message: "Invalid payload" }), {
         status: 400,
       });
@@ -14,7 +14,7 @@ export const POST = async (req) => {
     const { data, error } = await supabase
       .from("teams")
       .update({ team_members: members })
-      .eq("email", email)
+      .eq("id", id)
       .select();
 
     if (error) {

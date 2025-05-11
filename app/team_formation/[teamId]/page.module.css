@@ -1,0 +1,142 @@
+.wrapper {
+  padding: 2rem;
+  font-family: "Geist", sans-serif;
+  color: #fff;
+  text-align: center;
+}
+
+.info h1 {
+  font-size: 3rem;
+  color: black;
+  font-family: "Tagesschrift", system-ui;
+  font-weight: bolder;
+}
+.cardContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.addMemberCard {
+  background: #1e293bb4;
+  backdrop-filter: blur(3px);
+  border-radius: 1rem;
+  padding: 1rem 2rem;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+}
+
+.addMemberCard h2 {
+  font-size: 2rem;
+}
+
+.addBtn {
+  cursor: pointer;
+  margin: 0 auto;
+  width: 3rem;
+  height: 3rem;
+  background: #38bdf8;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease;
+}
+
+.addBtn:hover {
+  transform: scale(1.1);
+}
+.addMemberCard form {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  opacity: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: opacity 0.3s ease, max-height 0.3s ease;
+}
+.addMemberCard form.show {
+  opacity: 1;
+  max-height: 200px;
+}
+.addMemberCard form input {
+  padding: 0.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  outline: none;
+}
+
+.addMemberCard form button {
+  background: #22c55e;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.addMemberCard form button:hover {
+  background: #16a34a;
+}
+
+.memberList {
+  margin-top: 1rem;
+  text-align: left;
+  font-size: 1rem;
+  color: #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.memberList ul {
+  list-style-type: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+.memberList ul li {
+  background-color: #e4376c;
+  border-radius: 50px;
+  padding: 0.8rem;
+  width: 100%;
+  text-align: center;
+  font-size: 1.3rem;
+  box-shadow: inset -0.3rem -0.3rem 0.5rem lightpink;
+  cursor: pointer;
+}
+.memberList p {
+  font-size: 1.3rem;
+  margin: 0.8rem 0;
+}
+.memberList ul li:hover {
+  text-decoration: line-through;
+}
+.submit {
+  padding: 0.8rem 2rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #ffffff;
+  background: linear-gradient(135deg, #5a78f0, #8298f8);
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  box-shadow: 0 6px 20px rgba(90, 120, 240, 0.4);
+}
+
+.submit:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(90, 120, 240, 0.6);
+}
+
+.submit:active {
+  transform: translateY(1px);
+  box-shadow: 0 4px 15px rgba(90, 120, 240, 0.3);
+}
