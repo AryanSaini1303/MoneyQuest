@@ -58,6 +58,7 @@ export default function Home({ params }) {
   return (
     <div className="wrapper">
       <Background url={"noTextBackground.jpg"} />
+      {/* <Background url={"background.jpg"} /> */}
       <section className={styles.container}>
         <h1>Choose Your Avatar</h1>
 

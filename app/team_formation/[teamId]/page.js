@@ -57,6 +57,7 @@ export default function TeamFormationPage({ params }) {
   return (
     <div className={styles.wrapper}>
       <Background url="noTextBackground.jpg" />
+      {/* <Background url={"background.jpg"} /> */}
       <div className={styles.info}>
         <h1>Great teams turn vision into success.</h1>
       </div>

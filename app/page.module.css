@@ -1,9 +1,3 @@
-.imageSection img {
-  height: 100vh;
-  width: 100vw;
-  object-fit: cover;
-  filter: contrast(130%);
-}
 .roomSection {
   background: linear-gradient(rgba(255, 255, 255, 0), rgba(0, 0, 0, 0.807));
   backdrop-filter: blur(10px);
