@@ -5,6 +5,7 @@ import styles from "./page.module.css";
 import Background from "@/components/Background";
 import Loader from "@/components/Loader";
 import { useRouter } from "next/navigation";
+import GifOverlay from "@/components/GifOverlay";
 
 const seasons = [
   {
@@ -236,6 +237,21 @@ export default function InvestmentRoundPage() {
 
   return (
     <div className={styles.wrapper}>
+      {!(
+        Object.values(teamData).length == 0 && Object.values(season).length == 0
+      ) && (
+        <GifOverlay
+          url={
+            season.name === "Winter season"
+              ? "/images/snowfall.gif"
+              : season.name === "Rainy season"
+              ? "/images/rain.gif"
+              : season.name === "Summer season"
+              ? "/images/summerOverlay.gif"
+              : null
+          }
+        />
+      )}
       {updated && (
         <section className={styles.results}>
           <h1>Results</h1>
@@ -283,7 +299,11 @@ export default function InvestmentRoundPage() {
         </section>
       )}
       <Background
-        url="noTextBackground.jpg"
+        url={
+          season.name === "Winter season"
+            ? "winterBackground.png"
+            : "noTextBackground.jpg"
+        }
         styleObj={
           updated
             ? {
@@ -291,10 +311,14 @@ export default function InvestmentRoundPage() {
                 pointerEvents: "none",
                 userSelect: "none",
               }
-            : {}
+            : Object.values(season).length != 0 &&
+              season.name === "Rainy season"
+            ? { filter: "brightness(80%) contrast(80%)" }
+            : null
         }
       />
-      {!(season.length !== 0 && teamData.length !== 0) ? (
+      {Object.values(teamData).length == 0 &&
+      Object.values(season).length == 0 ? (
         <Loader />
       ) : (
         <>
@@ -356,11 +380,8 @@ export default function InvestmentRoundPage() {
                     alt={shop.shopName}
                     className={styles.shopImage}
                   />
-
                   <h3 className={styles.shopTitle}>{shop.shopName}</h3>
-
                   <p className={styles.shopDesc}>{shop.description}</p>
-
                   <div className={styles.shopDetails}>
                     <p>
                       <strong>Profit Margin:</strong> {shop.profitMarginPercent}
@@ -371,7 +392,6 @@ export default function InvestmentRoundPage() {
                       {["Low", "Moderate", "High"][shop.inventoryRiskLevel - 1]}
                     </p>
                   </div>
-
                   <div className={styles.sliderContainer}>
                     <input
                       type="range"
@@ -395,7 +415,7 @@ export default function InvestmentRoundPage() {
               ))}
             </div>
           </div>
-          {Object.values(investments).length !== 0 && (
+          {Object.values(investments).find((investment) => investment != 0) && (
             <button
               className={styles.submit}
               onClick={handleInvest}

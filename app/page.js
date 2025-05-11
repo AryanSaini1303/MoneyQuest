@@ -38,7 +38,14 @@ export default function Home() {
         const data = await res.json();
         // console.log(data);
         sessionStorage.setItem("roomId", roomId);
-        data.valid && router.push(`/home`);
+        if (data.valid) {
+          router.push(`/home`);
+        }
+        else{
+          alert("Wrong room id!, please try again");
+          setLoading(false);
+          setSubmit(false)
+        }
         setLoading(false);
       };
       validateRoom();

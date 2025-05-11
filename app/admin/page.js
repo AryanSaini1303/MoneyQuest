@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabaseClient";
 import Background from "@/components/Background";
 import { useRouter } from "next/navigation";
+import Loader from "@/components/Loader";
 
 export default function AdminPanel() {
   const [selectedTab, setSelectedTab] = useState("create");
@@ -82,6 +83,7 @@ export default function AdminPanel() {
         if (!response.ok) {
           console.error("Room creation failed:", result.error);
           alert("Failed to create room.");
+          setRoomId('');
         } else {
           // console.log("Room created successfully:", result);
           console.log("Room created successfully:");
@@ -97,13 +99,12 @@ export default function AdminPanel() {
 
   return loading ? (
     <div className={styles.container}>
-      <p>Loading...</p>
+      <Loader />
     </div>
   ) : session?.user == null || !admins.includes(session?.user?.email) ? (
     <div className={styles.container}>
-      {/* <Background url={"background.jpg"} /> */}
+      <Background url={"background.jpg"} />
       <section className={styles.loginSection}>
-        <h1>Hello, Admin</h1>
         <button className={styles.signInBtn} onClick={signIn}>
           <img src="/images/googleLogo.png" alt="google logo" />
           <h3>Sign in with Google</h3>
@@ -112,6 +113,10 @@ export default function AdminPanel() {
     </div>
   ) : (
     <div className={styles.container}>
+      <Background
+        url={"adminBackground.jpg"}
+        styleObj={{ filter: "blur(2px)" }}
+      />
       <div className={styles.sidebar}>
         <button
           className={`${styles.tabButton} ${
