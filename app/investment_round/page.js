@@ -104,6 +104,7 @@ export default function InvestmentRoundPage() {
   const [results, setResults] = useState([]);
   const [updated, setUpdated] = useState(false);
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   function getRiskEmojiAndMessage(modifier) {
     if (modifier >= 0.8) return "🟢 Safe Zone! Probably";
@@ -213,6 +214,7 @@ export default function InvestmentRoundPage() {
 
   useEffect(() => {
     if (results.length !== 0) {
+      setLoading(true);
       const saveResults = async () => {
         const response = await fetch("/api/saveResults", {
           method: "POST",
@@ -226,6 +228,7 @@ export default function InvestmentRoundPage() {
         // console.log("data", data);
         // data.success&&console.log(typeof(data.data[0].id));
         data.success && setUpdated(true);
+        setLoading(false);
       };
       saveResults();
     }
@@ -392,21 +395,23 @@ export default function InvestmentRoundPage() {
               ))}
             </div>
           </div>
-          <button
-            className={styles.submit}
-            onClick={handleInvest}
-            style={
-              updated
-                ? {
-                    filter: "blur(10px)",
-                    pointerEvents: "none",
-                    userSelect: "none",
-                  }
-                : null
-            }
-          >
-            Invest Now
-          </button>
+          {Object.values(investments).length !== 0 && (
+            <button
+              className={styles.submit}
+              onClick={handleInvest}
+              style={
+                updated
+                  ? {
+                      filter: "blur(10px)",
+                      pointerEvents: "none",
+                      userSelect: "none",
+                    }
+                  : null
+              }
+            >
+              {loading ? "Calculating returns..." : "Invest Now"}
+            </button>
+          )}
         </>
       )}
     </div>

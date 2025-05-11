@@ -10,6 +10,7 @@ export default function Home() {
   const [error, setError] = useState("");
   const [submit, setSubmit] = useState(false);
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -27,6 +28,7 @@ export default function Home() {
 
   useEffect(() => {
     if (roomId.length != 0 && submit) {
+      setLoading(true);
       const validateRoom = async () => {
         const res = await fetch("/api/validateRoom", {
           method: "POST",
@@ -37,6 +39,7 @@ export default function Home() {
         // console.log(data);
         sessionStorage.setItem("roomId", roomId);
         data.valid && router.push(`/home`);
+        setLoading(false);
       };
       validateRoom();
     }
@@ -61,7 +64,7 @@ export default function Home() {
             />
             {/* {error && <p className={styles.error}>{error}</p>} */}
             <button type="submit" className={styles.button}>
-              Join
+              {loading ? "Joining..." : "Join"}
             </button>
           </form>
         </section>

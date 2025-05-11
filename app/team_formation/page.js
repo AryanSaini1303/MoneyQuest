@@ -13,6 +13,7 @@ export default function TeamFormationPage() {
   const [submit, setSubmit] = useState(false);
   const router = useRouter();
   const [teamId, setTeamId] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     setTeamId(sessionStorage.getItem("teamId"));
@@ -38,6 +39,7 @@ export default function TeamFormationPage() {
 
   useEffect(() => {
     if (submit) {
+      setLoading(true);
       const addTeamMembers = async () => {
         const response = await fetch("/api/addTeamMembers", {
           method: "POST",
@@ -52,6 +54,7 @@ export default function TeamFormationPage() {
         // data.success&&console.log(typeof(data.data[0].id));
         sessionStorage.setItem("teamId", teamId);
         data.success && router.push(`/investment_round`);
+        setLoading(false);
       };
       addTeamMembers();
     }
@@ -119,7 +122,7 @@ export default function TeamFormationPage() {
         </div>
         {teamMembers.length != 0 && (
           <button className={styles.submit} onClick={() => setSubmit(true)}>
-            Let the quest begin
+            {loading ? "Saving..." : "Let the quest begin"}
           </button>
         )}
       </div>
