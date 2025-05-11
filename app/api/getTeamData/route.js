@@ -3,18 +3,18 @@ import { supabase } from "@/lib/supabaseClient";
 export async function GET(req) {
   try {
     const { searchParams } = new URL(req.url);
-    const email = searchParams.get("email");
+    const team_id = searchParams.get("team_id");
 
-    if (!email) {
-      return new Response(JSON.stringify({ error: "Missing email" }), {
+    if (!team_id) {
+      return new Response(JSON.stringify({ error: "Missing team_id" }), {
         status: 400,
       });
     }
 
     const { data, error } = await supabase
       .from("teams")
-      .select("*")
-      .eq("email", email);
+      .select("name, avatar")
+      .eq("id", team_id);
 
     if (error) {
       console.error("Supabase select error:", error);
