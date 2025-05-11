@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import styles from "./page.module.css";
 import Background from "@/components/Background";
+import Loader from "@/components/Loader";
+import { useRouter } from "next/navigation";
 
 const seasons = [
   {
@@ -98,10 +100,69 @@ export default function InvestmentRoundPage() {
   const teamBalance = 10000;
   const [investments, setInvestments] = useState({});
   const [teamData, setTeamData] = useState("");
+  const [season, setSeason] = useState("");
+  const [results, setResults] = useState([]);
+  const [updated, setUpdated] = useState(false);
+  const router = useRouter();
+
+  function getRiskEmojiAndMessage(modifier) {
+    if (modifier >= 0.8) return "🟢 Safe Zone! Probably";
+    if (modifier >= 0.5) return "🟡 Hmm... Medium risk. Could go either way!";
+    return "🔴 Uh-oh! High risk! But High returns too";
+  }
+
+  function handleInvest() {
+    selectedShops.forEach((shopIdStr) => {
+      const shopId = parseInt(shopIdStr);
+      const shop = shops.find((s) => s.id === shopId);
+      const investedAmount = investments[shopId];
+      // Calculating base profit
+      const profitMarginMultiplier = 1 + shop.profitMarginPercent / 100;
+      const seasonMultiplier = // finding season profit multiplier
+        shop.demandSeason.toLowerCase() ===
+        season.name.toLowerCase().split(" ")[0]
+          ? shop.seasonBoostMultiplier
+          : Math.random() * 0.5 + 0.4; // penalty multiplier: 0.4x to 0.9x;
+      // Risk Modifier
+      let riskModifier = 1; // default: no impact
+      if (shop.inventoryRiskLevel === 1) {
+        // Low Risk → 0.8x to 1.0x
+        riskModifier = Math.random() * 0.2 + 0.8;
+      } else if (shop.inventoryRiskLevel === 2) {
+        // Medium Risk → 0.5x to 1.1x
+        riskModifier = Math.random() * 0.6 + 0.5;
+      } else if (shop.inventoryRiskLevel === 3) {
+        // High Risk → 0.1x to 1.2x
+        riskModifier = Math.random() * 1.1 + 0.1;
+      }
+      // net return amount of a particular shop
+      const returnAmount =
+        investedAmount *
+        profitMarginMultiplier *
+        seasonMultiplier *
+        riskModifier;
+      setResults((prev) => [
+        ...prev,
+        {
+          shopName: shop.shopName,
+          invested: investedAmount,
+          returnAmount: Math.round(returnAmount),
+          riskModifier: riskModifier.toFixed(2),
+        },
+      ]);
+    });
+  }
 
   useEffect(() => {
-    setTeamId(sessionStorage.getItem("teamId") || "1");
+    setTeamId(sessionStorage.getItem("teamId") || null);
   }, []);
+
+  useEffect(() => {
+    if (teamId == null) {
+      alert("Unauthorised!");
+      router.back();
+    }
+  }, [teamId]);
 
   const totalInvested = Object.values(investments).reduce(
     (acc, amt) => acc + amt,
@@ -132,18 +193,120 @@ export default function InvestmentRoundPage() {
         `/api/getTeamData?team_id=${sessionStorage.getItem("teamId")}`
       );
       const data = await res.json();
-      console.log(data);
+      // console.log(data);
       data.success && setTeamData(data.data[0]);
     };
     getTeamData();
   }, []);
 
+  useEffect(() => {
+    const getSeason = async () => {
+      const res = await fetch(
+        `/api/getSeason?id=${sessionStorage.getItem("roomId")}`
+      );
+      const data = await res.json();
+      // console.log(data);
+      data.success && setSeason(seasons[data.data[0].season]);
+    };
+    getSeason();
+  }, []);
+
+  useEffect(() => {
+    if (results.length !== 0) {
+      const saveResults = async () => {
+        const response = await fetch("/api/saveResults", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            result: results,
+            id: teamId,
+          }),
+        });
+        const data = await response.json();
+        // console.log("data", data);
+        // data.success&&console.log(typeof(data.data[0].id));
+        data.success && setUpdated(true);
+      };
+      saveResults();
+    }
+  }, [results]);
+
   return (
     <div className={styles.wrapper}>
-      <Background url="noTextBackground.jpg" />
-      <div className={styles.header}>
-        {teamData ? (
-          <>
+      {updated && (
+        <section className={styles.results}>
+          <h1>Results</h1>
+          <div className={styles.cardsContainer}>
+            {results.map((result, index) => (
+              <div className={styles.card} key={index}>
+                <h2 className={styles.shopName}>{result.shopName}</h2>
+                <div className={styles.values}>
+                  <p>
+                    <strong>Invested:</strong> ₹{result.invested}
+                  </p>
+                  <p>
+                    <strong>Return:</strong>{" "}
+                    <span
+                      style={{
+                        color:
+                          result.returnAmount < result.invested
+                            ? "crimson"
+                            : "green",
+                        fontWeight: "bold",
+                      }}
+                    >
+                      ₹{result.returnAmount}
+                    </span>
+                  </p>
+                  <p>
+                    <strong>Risk:</strong>{" "}
+                    <span>
+                      {getRiskEmojiAndMessage(parseFloat(result.riskModifier))}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            ))}
+            <button
+              className={styles.submit}
+              onClick={() => {
+                router.push("/");
+                sessionStorage.clear();
+              }}
+            >
+              Return to main screen
+            </button>
+          </div>
+        </section>
+      )}
+      <Background
+        url="noTextBackground.jpg"
+        styleObj={
+          updated
+            ? {
+                filter: "blur(10px)",
+                pointerEvents: "none",
+                userSelect: "none",
+              }
+            : {}
+        }
+      />
+      {!(season.length !== 0 && teamData.length !== 0) ? (
+        <Loader />
+      ) : (
+        <>
+          <div
+            className={styles.header}
+            style={
+              updated
+                ? {
+                    filter: "blur(10px)",
+                    pointerEvents: "none",
+                    userSelect: "none",
+                  }
+                : null
+            }
+          >
             <div className={styles.teamInfo}>
               <img
                 src={`/images/avatars/${teamData.avatar}`}
@@ -162,63 +325,90 @@ export default function InvestmentRoundPage() {
               &#8377;{(teamBalance - totalInvested).toLocaleString()}
               <span className={styles.balanceLabel}>remaining</span>
             </div>
-          </>
-        ) : (
-          <p style={{ margin: "2rem auto" }}>Loading...</p>
-        )}
-      </div>
-
-      {/* <h1 className={styles.heading}>Investment Round</h1>
-      <p className={styles.subtext}>Think smart, invest wisely</p> */}
-      <div className={styles.grid}>
-        <div className={styles.seasonCard}>
-          <h2 className={styles.seasonTitle}>{seasons[0].name}</h2>
-          <p className={styles.seasonDesc}>{seasons[0].description}</p>
-          <p className={styles.note}>Note: You can invest in maximum 2 shops</p>
-        </div>
-        <div className={styles.shopGrid}>
-          {shops.map((shop) => (
-            <div key={shop.id} className={styles.shopCard}>
-              <img
-                src={shop.image}
-                alt={shop.shopName}
-                className={styles.shopImage}
-              />
-
-              <h3 className={styles.shopTitle}>{shop.shopName}</h3>
-
-              <p className={styles.shopDesc}>{shop.description}</p>
-
-              <div className={styles.shopDetails}>
-                <p>
-                  <strong>Profit Margin:</strong> {shop.profitMarginPercent}%
-                </p>
-                <p>
-                  <strong>Risk Level:</strong>{" "}
-                  {["Low", "Moderate", "High"][shop.inventoryRiskLevel - 1]}
-                </p>
-              </div>
-
-              <div className={styles.sliderContainer}>
-                <input
-                  type="range"
-                  min="0"
-                  max={teamBalance}
-                  step="100"
-                  value={investments[shop.id] || 0}
-                  onChange={(e) =>
-                    handleInvestmentChange(shop.id, parseInt(e.target.value))
+          </div>
+          <div
+            className={styles.grid}
+            style={
+              updated
+                ? {
+                    filter: "blur(10px)",
+                    pointerEvents: "none",
+                    userSelect: "none",
                   }
-                  className={styles.slider}
-                />
-                <span className={styles.sliderValue}>
-                  ₹{investments[shop.id] || 0}
-                </span>
-              </div>
+                : null
+            }
+          >
+            <div className={styles.seasonCard}>
+              <h2 className={styles.seasonTitle}>{season.name}</h2>
+              <p className={styles.seasonDesc}>{season.description}</p>
+              <p className={styles.note}>
+                Note: You can invest in maximum 2 shops
+              </p>
             </div>
-          ))}
-        </div>
-      </div>
+            <div className={styles.shopGrid}>
+              {shops.map((shop) => (
+                <div key={shop.id} className={styles.shopCard}>
+                  <img
+                    src={shop.image}
+                    alt={shop.shopName}
+                    className={styles.shopImage}
+                  />
+
+                  <h3 className={styles.shopTitle}>{shop.shopName}</h3>
+
+                  <p className={styles.shopDesc}>{shop.description}</p>
+
+                  <div className={styles.shopDetails}>
+                    <p>
+                      <strong>Profit Margin:</strong> {shop.profitMarginPercent}
+                      %
+                    </p>
+                    <p>
+                      <strong>Risk Level:</strong>{" "}
+                      {["Low", "Moderate", "High"][shop.inventoryRiskLevel - 1]}
+                    </p>
+                  </div>
+
+                  <div className={styles.sliderContainer}>
+                    <input
+                      type="range"
+                      min="0"
+                      max={teamBalance}
+                      step="100"
+                      value={investments[shop.id] || 0}
+                      onChange={(e) =>
+                        handleInvestmentChange(
+                          shop.id,
+                          parseInt(e.target.value)
+                        )
+                      }
+                      className={styles.slider}
+                    />
+                    <span className={styles.sliderValue}>
+                      ₹{investments[shop.id] || 0}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <button
+            className={styles.submit}
+            onClick={handleInvest}
+            style={
+              updated
+                ? {
+                    filter: "blur(10px)",
+                    pointerEvents: "none",
+                    userSelect: "none",
+                  }
+                : null
+            }
+          >
+            Invest Now
+          </button>
+        </>
+      )}
     </div>
   );
 }

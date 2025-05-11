@@ -14,13 +14,14 @@ export default function AdminPanel() {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const [season, setSeason] = useState("");
 
   const signIn = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options:{
-        redirectTo:window.location.href
-      }
+      options: {
+        redirectTo: window.location.href, // here we mentioned to redirect to the same link which was opened, post authentication. But we have to add this url to the list of "Redirect URL" in Supabase > Authentication > URL Configuration so that supabase can redirect to this link i.e. "https://money-quest-ten.vercel.app/admin" or "https://localhost:3000/admin" based on prod and dev
+      },
     });
     if (error) {
       console.log(error);
@@ -43,6 +44,9 @@ export default function AdminPanel() {
   const generateRoomId = () => {
     const id = "R-" + Math.random().toString(36).substring(2, 8).toUpperCase();
     setRoomId(id);
+    const season = Math.floor(Math.random() * 3);
+    setSeason(season);
+    // console.log(season);
     // Optional: Send to Supabase API route here
   };
 
@@ -72,7 +76,7 @@ export default function AdminPanel() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ roomId }),
+          body: JSON.stringify({ roomId, season }),
         });
         const result = await response.json();
         if (!response.ok) {
@@ -86,10 +90,10 @@ export default function AdminPanel() {
         console.error("Error while creating room:", error);
       }
     };
-    if (roomId.length !== 0) {
+    if (roomId.length !== 0 && season.length !== 0) {
       createRoom();
     }
-  }, [roomId]);
+  }, [roomId, season]);
 
   return loading ? (
     <div className={styles.container}>

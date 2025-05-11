@@ -18,6 +18,13 @@ export default function TeamFormationPage() {
     setTeamId(sessionStorage.getItem("teamId"));
   }, []);
 
+  useEffect(() => {
+    if (teamId == null) {
+      alert("Unauthorised!");
+      router.back();
+    }
+  }, [teamId]);
+
   const handleAddMember = (e) => {
     e.preventDefault();
     if (memberName.trim() === "") return;

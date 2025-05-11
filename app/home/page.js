@@ -27,6 +27,13 @@ export default function Home() {
     setRoomId(sessionStorage.getItem("roomId"));
   }, []);
 
+  useEffect(() => {
+    if (roomId == null) {
+      alert("Unauthorised!");
+      router.back();
+    }
+  }, [roomId]);
+
   function handleNameChange(e) {
     // console.log(e.target.value);
     setTeamName(e.target.value);
