@@ -18,9 +18,6 @@ export default function AdminPanel() {
   const signIn = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
-      options: {
-        redirectTo: `${window.location.href}`, // now safely set after hydration
-      },
     });
     if (error) {
       console.log(error);
