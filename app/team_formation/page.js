@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import styles from "./page.module.css";
 import { useRouter } from "next/navigation";
 
-export default function TeamFormationPage({ params }) {
+export default function TeamFormationPage() {
   const [showForm, setShowForm] = useState(false);
   const [memberName, setMemberName] = useState("");
   const [teamMembers, setTeamMembers] = useState([]);
@@ -15,12 +15,7 @@ export default function TeamFormationPage({ params }) {
   const [teamId, setTeamId] = useState("");
 
   useEffect(() => {
-    const fetchParams = async () => {
-      const { teamId } = await params;
-      setTeamId(teamId);
-      console.log(teamId);
-    };
-    fetchParams();
+    setTeamId(sessionStorage.getItem("teamId"));
   }, []);
 
   const handleAddMember = (e) => {
@@ -48,7 +43,8 @@ export default function TeamFormationPage({ params }) {
         const data = await response.json();
         // console.log("data", data);
         // data.success&&console.log(typeof(data.data[0].id));
-        data.success && router.push(`/investment_round/${teamId}`);
+        sessionStorage.setItem("teamId", teamId);
+        data.success && router.push(`/investment_round`);
       };
       addTeamMembers();
     }

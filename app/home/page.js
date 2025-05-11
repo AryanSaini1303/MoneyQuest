@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabaseClient";
 import Background from "@/components/Background";
 
-export default function Home({ params }) {
+export default function Home() {
   const images = Array.from({ length: 49 }, (_, i) => `${i + 1}.png`);
   const [chosenAvatar, setChosenAvatar] = useState("37.png");
   const [teamName, setTeamName] = useState("");
@@ -13,13 +13,18 @@ export default function Home({ params }) {
   const router = useRouter();
   const [roomId, setRoomId] = useState("");
 
+  // useEffect(() => {
+  //   const fetchParams = async () => {
+  //     const { roomId } = await params;
+  //     setRoomId(roomId);
+  //     // console.log(roomId);
+  //   };
+  //   fetchParams();
+  // }, []);
+  // this can be used to fetch the data received through params in the url, for that this component will recieve something which can be destructured as "{params}" to get "params" i.e. export default function Home({params}){}
+
   useEffect(() => {
-    const fetchParams = async () => {
-      const { roomId } = await params;
-      setRoomId(roomId);
-      console.log(roomId);
-    };
-    fetchParams();
+    setRoomId(sessionStorage.getItem("roomId"));
   }, []);
 
   function handleNameChange(e) {
@@ -44,12 +49,13 @@ export default function Home({ params }) {
           }),
         });
         const data = await response.json();
-        console.log("data",data);
+        // console.log("data", data);
         if (data.message?.startsWith("duplicate key")) {
           alert("You already have a team");
         }
         // data.success&&console.log(typeof(data.data[0].id));
-        data.success && router.push(`/team_formation/${data?.data[0].id}`);
+        sessionStorage.setItem("teamId", data?.data[0].id); // using sessionStorage to store the "teamId" of the user currently active in the tab, once the tab closes then the data is erased. Not using localStorage as it keeps the data forever until explicitly deleted manually
+        data.success && router.push(`/team_formation`);
       };
       saveTeamData();
     }

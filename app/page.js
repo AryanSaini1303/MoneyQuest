@@ -34,8 +34,9 @@ export default function Home() {
           body: JSON.stringify({ roomId }),
         });
         const data = await res.json();
-        console.log(data);
-        data.valid && router.push(`/home/${roomId}`);
+        // console.log(data);
+        sessionStorage.setItem("roomId", roomId);
+        data.valid && router.push(`/home`);
       };
       validateRoom();
     }

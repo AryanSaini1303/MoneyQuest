@@ -2,17 +2,13 @@
 
 import { useState, useEffect } from "react";
 
-export default function ({ params }) {
+export default function () {
   const [teamId, setTeamId] = useState("");
 
   useEffect(() => {
-    const fetchParams = async () => {
-      const { teamId } = await params;
-      setTeamId(teamId);
-      console.log(teamId);
-    };
-    fetchParams();
+    setTeamId(sessionStorage.getItem("teamId"));
   }, []);
+
   return (
     <>
       <h1>Investment Round</h1>

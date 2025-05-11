@@ -79,7 +79,8 @@ export default function AdminPanel() {
           console.error("Room creation failed:", result.error);
           alert("Failed to create room.");
         } else {
-          console.log("Room created successfully:", result);
+          // console.log("Room created successfully:", result);
+          console.log("Room created successfully:");
         }
       } catch (error) {
         console.error("Error while creating room:", error);
