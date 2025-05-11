@@ -11,7 +11,7 @@ import Loader from "@/components/Loader";
 export default function AdminPanel() {
   const [selectedTab, setSelectedTab] = useState("create");
   const [roomId, setRoomId] = useState("");
-  const admins = ["saini.aryan9999@gmail.com"];
+  const admins = ["saini.aryan9999@gmail.com", "yograj.rr@gmail.com"];
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
@@ -83,7 +83,7 @@ export default function AdminPanel() {
         if (!response.ok) {
           console.error("Room creation failed:", result.error);
           alert("Failed to create room.");
-          setRoomId('');
+          setRoomId("");
         } else {
           // console.log("Room created successfully:", result);
           console.log("Room created successfully:");
