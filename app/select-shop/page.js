@@ -21,7 +21,7 @@ const shops = [
     id: 3,
     name: "Ice Cream",
     price: 22000,
-    image: "/images/shops/icecream.png",
+    image: "/images/shops/iceCream.png",
   },
 ];
 
@@ -208,7 +208,7 @@ export default function SelectShopsPage() {
           <h3 style={{ margin: "0" }}>Iteration: {iteration}</h3>
           <h2 className={styles.seasonTitle}>{season.name}</h2>
           <p className={styles.seasonDesc}>{season.description}</p>
-          <p className={styles.note}>Note: You can invest in maximum 2 shops</p>
+          {/* <p className={styles.note}>Note: You can invest in maximum 2 shops</p> */}
         </div>
         <div className={styles.shopList}>
           {shops.map((shop) => (
