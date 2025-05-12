@@ -8,6 +8,7 @@ import ProceedButton from "@/components/ProceedButton";
 import { useRouter } from "next/navigation";
 import HeaderComponent from "@/components/HeaderComponent";
 import GifOverlay from "@/components/GifOverlay";
+import Loader from "@/components/Loader";
 
 const RECIPES = {
   Coffee: {
@@ -101,52 +102,64 @@ const SellItems = () => {
   const [totalNetProfit, setTotalNetProfit] = useState(0);
   const [gameEnd, setGameEnd] = useState(false);
   const [season, setSeason] = useState("");
+  const [sessionData, setSessionData] = useState();
 
   useEffect(() => {
-    setSeason(() => {
-      const session = gameSessionManager.gameSession;
-      return session.iterations[session.currentIteration - 1]?.season;
-    });
-  }, []);
-
-  useEffect(() => {
-    const iterations = gameSessionManager.get("iterations") || [];
-    const currentIteration = gameSessionManager.get("currentIteration") || 0;
-    if (!iterations.length) return;
-    console.log(currentIteration);
-    const { ingredientPurchaseSummary } = iterations[currentIteration - 1];
-    setTeamName(gameSessionManager.get("name"));
-    setTeamAvatar(gameSessionManager.get("avatar"));
-    setBalance(gameSessionManager.get("balance"));
-
-    const calculated = ingredientPurchaseSummary.map((shop) => {
-      const recipe = RECIPES[shop.shopName];
-      const producibleCount = calculateMaxItems(shop.ingredients, recipe);
-      return {
-        shopName: shop.shopName,
-        itemName: shop.itemName,
-        ingredients: shop.ingredients,
-        producibleCount,
-        price: "",
-        unitsSold: 0,
-        totalRevenue: 0,
-        operationalCost: 0,
-        netProfit: 0,
-        confirmed: false,
-      };
-    });
-    setShopProductions(calculated);
-    const currentSummary = iterations[currentIteration - 1]?.investmentSummary;
-
-    if (Array.isArray(currentSummary) && currentSummary.length !== 0) {
-      if (currentIteration !== 7) {
+    if (!gameSessionManager.get("teamId")) {
+      alert("Please form a team first!");
+      setTimeout(() => {
+        router.replace("/");
+      }, [0]);
+      return;
+    } else {
+      const currentIteration = gameSessionManager.get("currentIteration") || 0;
+      const iterations = gameSessionManager.get("iterations") || [];
+      if (currentIteration > iterations.length) {
         alert("You've already invested, please proceed to next iteration.");
-        router.push("/select-shop");
-      } else if (currentIteration === 7) {
-        alert(
-          "The Game has ended, Admin will show you the leaderboard in no time. Meanwhile, you can join another room"
-        );
-        router.push("/");
+        setTimeout(() => {
+          router.replace("/select-shop");
+        }, 0);
+        return;
+      }
+      setSeason(() => {
+        const session = gameSessionManager.gameSession;
+        return session.iterations[session.currentIteration - 1]?.season;
+      });
+      if (!iterations.length) return;
+      const { ingredientPurchaseSummary } =
+        iterations[currentIteration - 1] || iterations[currentIteration - 2];
+      setTeamName(gameSessionManager.get("name"));
+      setTeamAvatar(gameSessionManager.get("avatar"));
+      setBalance(gameSessionManager.get("balance"));
+      const calculated = ingredientPurchaseSummary.map((shop) => {
+        const recipe = RECIPES[shop.shopName];
+        const producibleCount = calculateMaxItems(shop.ingredients, recipe);
+        return {
+          shopName: shop.shopName,
+          itemName: shop.itemName,
+          ingredients: shop.ingredients,
+          producibleCount,
+          price: "",
+          unitsSold: 0,
+          totalRevenue: 0,
+          operationalCost: 0,
+          netProfit: 0,
+          confirmed: false,
+        };
+      });
+      setShopProductions(calculated);
+      const currentSummary =
+        iterations[currentIteration - 1]?.investmentSummary;
+      if (Array.isArray(currentSummary) && currentSummary.length !== 0) {
+        if (currentIteration !== 7) {
+          alert("You've already invested, please proceed to next iteration.");
+          router.replace("/select-shop");
+        } else if (currentIteration === 7) {
+          alert(
+            "The Game has ended, Admin will show you the leaderboard in no time. Meanwhile, you can join another room"
+          );
+          router.replace("/");
+        }
       }
     }
   }, []);
@@ -156,11 +169,26 @@ const SellItems = () => {
   };
 
   const handleAllConfirm = () => {
+    const session = gameSessionManager.gameSession;
+    const currentIterationIndex = session.currentIteration - 1;
+    // Validate all selected shop inputs
+    const selectedShopNames = session.iterations[
+      currentIterationIndex
+    ].selectedShops.map((id) => shops.find((shop) => shop.id === id)?.name);
+    const missingInputShop = shopProductions.find((shop) => {
+      if (!selectedShopNames.includes(shop.shopName)) return false;
+      const priceStr = inputValues[shop.shopName];
+      const price = parseFloat(priceStr);
+      return !priceStr || isNaN(price);
+    });
+
+    if (missingInputShop) {
+      alert(`Please enter a valid price for ${missingInputShop.shopName}.`);
+      return;
+    }
     setHideButton(true);
     const updated = shopProductions.map((shop) => {
       const price = parseFloat(inputValues[shop.shopName]);
-      if (isNaN(price)) return { ...shop };
-
       const salePercentage = getSalePercentage(price, shop.shopName);
       const unitsSold = Math.floor(shop.producibleCount * salePercentage);
       let totalRevenue = unitsSold * price;
@@ -188,8 +216,6 @@ const SellItems = () => {
       };
     });
     setShopProductions(updated);
-    const session = gameSessionManager.gameSession;
-    const currentIterationIndex = session.currentIteration - 1;
     const investmentSummary = updated.map((shop) => ({
       shopName: shop.shopName,
       itemName: shop.itemName,
@@ -201,7 +227,6 @@ const SellItems = () => {
       totalInvestment: shop.totalInvestment,
       netProfit: shop.netProfit,
     }));
-
     shops.map((shop) => {
       if (
         session.iterations[currentIterationIndex].selectedShops.includes(
@@ -211,20 +236,16 @@ const SellItems = () => {
         setShopsPurchaseCost((prev) => (prev += shop.price));
       }
     });
-
     if (session.currentIteration < 7 && session.currentIteration > 0) {
       session.currentIteration += 1;
-    } else if (session.currentIteration === 7) {
-      setGameEnd(true);
     }
-
     session.iterations[currentIterationIndex].investmentSummary =
       investmentSummary;
+    setSessionData(session);
     sessionStorage.setItem("gameSession", JSON.stringify(session));
-
     gameSessionManager.gameSession.iterations[
       currentIterationIndex
-    ].investmentSummary.map((investment) => {
+    ].investmentSummary.forEach((investment) => {
       setTotalNetProfit((prev) => prev + investment.netProfit);
     });
   };
@@ -245,6 +266,35 @@ const SellItems = () => {
       setBalance(gameSessionManager.get("balance"));
     }
   }, [totalNetProfit]);
+
+  useEffect(() => {
+    if (sessionData && Object.keys(sessionData.iterations).length == 7) {
+      setGameEnd(true);
+      const sendAllIterationsData = async () => {
+        try {
+          const res = await fetch("/api/saveSessionData", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              teamId: sessionData.teamId,
+              roomId: sessionData.roomId,
+              sessionData: sessionData,
+            }),
+          });
+          const data = await res.json();
+          if (data.success) {
+            console.log("Full iterations data successfully sent to server.");
+            sessionStorage.clear();
+          }
+        } catch (error) {
+          console.error("Error sending all iterations data:", error);
+        }
+      };
+      sendAllIterationsData();
+    }
+  }, [sessionData]);
 
   return (
     <div className={styles.container}>
@@ -273,80 +323,86 @@ const SellItems = () => {
             : null
         }
       />
-      <HeaderComponent
-        avatar={teamAvatar}
-        name={teamName}
-        heading={"Set Price"}
-        balance={balance}
-      />
-      <h2 className={styles.heading}>Sales Summary</h2>
-      <div className={styles.grid}>
-        {shopProductions.map((shop) => (
-          <div className={styles.card} key={shop.shopName}>
-            <img
-              src={`/images/shops/${
-                shop.shopName == "Ice Cream"
-                  ? "iceCream"
-                  : shop.shopName.toLowerCase()
-              }.png`}
-              alt={shop.shopName}
-              className={styles.shopImage}
-            />
-            <div className={styles.shopHeader}>
-              <div>
-                <h3>{shop.shopName}</h3>
-                <p>Item: {shop.itemName}</p>
-                <p>Can Produce: {shop.producibleCount}</p>
+      {teamAvatar.length != 0 && teamName.length != 0 && balance.length != 0 ? (
+        <>
+          <HeaderComponent
+            avatar={teamAvatar}
+            name={teamName}
+            heading={"Set Price"}
+            balance={balance}
+          />
+          <h2 className={styles.heading}>Sales Summary</h2>
+          <div className={styles.grid}>
+            {shopProductions.map((shop) => (
+              <div className={styles.card} key={shop.shopName}>
+                <img
+                  src={`/images/shops/${
+                    shop.shopName == "Ice Cream"
+                      ? "iceCream"
+                      : shop.shopName.toLowerCase()
+                  }.png`}
+                  alt={shop.shopName}
+                  className={styles.shopImage}
+                />
+                <div className={styles.shopHeader}>
+                  <div>
+                    <h3>{shop.shopName}</h3>
+                    <p>Item: {shop.itemName}</p>
+                    <p>Can Produce: {shop.producibleCount}</p>
+                  </div>
+                </div>
+                {!shop.confirmed && (
+                  <label className={styles.priceInput}>
+                    Set Price: ₹{" "}
+                    <input
+                      type="number"
+                      min="1"
+                      value={inputValues[shop.shopName] || ""}
+                      onChange={(e) =>
+                        handlePriceInput(shop.shopName, e.target.value)
+                      }
+                    />{" "}
+                    / {shop.itemName}
+                  </label>
+                )}
+                {shop.confirmed && (
+                  <div className={styles.salesDetails}>
+                    <p>Set Price: {shop.price}</p>
+                    <p>Units Sold: {shop.unitsSold}</p>
+                    <p>Total Revenue: ₹{shop.totalRevenue.toFixed(2)}</p>
+                    <p>Operational Cost: ₹{shop.operationalCost.toFixed(2)}</p>
+                    <p>Total Investment: ₹{shop.totalInvestment.toFixed(2)}</p>
+                    <p>
+                      <strong>Net Profit: ₹{shop.netProfit.toFixed(2)}</strong>
+                    </p>
+                  </div>
+                )}
               </div>
-            </div>
-            {!shop.confirmed && (
-              <label className={styles.priceInput}>
-                Set Price: ₹{" "}
-                <input
-                  type="number"
-                  min="1"
-                  value={inputValues[shop.shopName] || ""}
-                  onChange={(e) =>
-                    handlePriceInput(shop.shopName, e.target.value)
-                  }
-                />{" "}
-                / {shop.itemName}
-              </label>
-            )}
-            {shop.confirmed && (
-              <div className={styles.salesDetails}>
-                <p>Set Price: {shop.price}</p>
-                <p>Units Sold: {shop.unitsSold}</p>
-                <p>Total Revenue: ₹{shop.totalRevenue.toFixed(2)}</p>
-                <p>Operational Cost: ₹{shop.operationalCost.toFixed(2)}</p>
-                <p>Total Investment: ₹{shop.totalInvestment.toFixed(2)}</p>
-                <p>
-                  <strong>Net Profit: ₹{shop.netProfit.toFixed(2)}</strong>
-                </p>
-              </div>
-            )}
+            ))}
           </div>
-        ))}
-      </div>
-      <ProceedButton
-        func={
-          !hideButton
-            ? handleAllConfirm
-            : () => {
-                if (!gameEnd) {
-                  router.push("/select-shop");
-                } else {
-                  alert(
-                    "The Game has ended, Admin will show you the leaderboard in no time. Meanwhile, you can join another room"
-                  );
-                  router.push("/");
-                }
-              }
-        }
-        styleObj={{ margin: "1rem auto", display: "block" }}
-      >
-        {!hideButton ? "Submit Prices" : "Invest Again"}
-      </ProceedButton>
+          <ProceedButton
+            func={
+              !hideButton
+                ? handleAllConfirm
+                : () => {
+                    if (!gameEnd) {
+                      router.replace("/select-shop");
+                    } else {
+                      alert(
+                        "The Game has ended, Admin will show you the leaderboard in no time. Meanwhile, you can join another room"
+                      );
+                      router.replace("/");
+                    }
+                  }
+            }
+            styleObj={{ margin: "1rem auto", display: "block" }}
+          >
+            {!hideButton ? "Submit Prices" : "Invest Again"}
+          </ProceedButton>
+        </>
+      ) : (
+        <Loader />
+      )}
     </div>
   );
 };

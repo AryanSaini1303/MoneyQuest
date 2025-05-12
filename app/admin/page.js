@@ -15,13 +15,16 @@ export default function AdminPanel() {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  // const [season, setSeason] = useState("");
+  const [roomIdInputTemp, setRoomIdInputTemp] = useState(""); // Temp state for input field value
+  const [roomIdInput, setRoomIdInput] = useState(""); // Final state for room ID when submit is clicked
+  const [leaderBoardData, setLeaderBoardData] = useState([]);
+  const [sortedLeaderBoard, setSortedLeaderBoard] = useState([]);
 
   const signIn = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: window.location.href, // here we mentioned to redirect to the same link which was opened, post authentication. But we have to add this url to the list of "Redirect URL" in Supabase > Authentication > URL Configuration so that supabase can redirect to this link i.e. "https://money-quest-ten.vercel.app/admin" or "https://localhost:3000/admin" based on prod and dev
+        redirectTo: window.location.href, // here we mentioned to redirect to the same link which was opened, post authentication.
       },
     });
     if (error) {
@@ -39,29 +42,23 @@ export default function AdminPanel() {
     }
     setSelectedTab("create");
     setSession(null);
-    router.push(window.location.href);
+    router.replace(window.location.href);
   };
 
   const generateRoomId = () => {
     const id = "R-" + Math.random().toString(36).substring(2, 8).toUpperCase();
     setRoomId(id);
-    // const season = Math.floor(Math.random() * 3);
-    // setSeason(season);
-    // console.log(season);
   };
 
   useEffect(() => {
     const fetchSession = async () => {
       const session = await supabase.auth.getUser();
-      // console.log(session);
       setSession(session.data);
-      // console.log(admins.includes(session.data?.user?.email));
       if (session.data.user && !admins.includes(session.data?.user?.email)) {
-        alert("You are not authorised to acccess the admin panel");
+        alert("You are not authorised to access the admin panel");
         setSelectedTab("create");
         setSession(null);
         signOut();
-        // router.push(window.location.href);
       }
       setLoading(false);
     };
@@ -69,7 +66,6 @@ export default function AdminPanel() {
   }, []);
 
   useEffect(() => {
-    // if (roomId.length !== 0 && season.length !== 0) {
     if (roomId.length !== 0) {
       const createRoom = async () => {
         try {
@@ -78,7 +74,6 @@ export default function AdminPanel() {
             headers: {
               "Content-Type": "application/json",
             },
-            // body: JSON.stringify({ roomId, season }),
             body: JSON.stringify({ roomId }),
           });
           const result = await response.json();
@@ -87,8 +82,7 @@ export default function AdminPanel() {
             alert("Failed to create room.");
             setRoomId("");
           } else {
-            // console.log("Room created successfully:", result);
-            console.log("Room created successfully:");
+            console.log("Room created successfully");
           }
         } catch (error) {
           console.error("Error while creating room:", error);
@@ -96,8 +90,33 @@ export default function AdminPanel() {
       };
       createRoom();
     }
-    // }, [roomId, season]);
   }, [roomId]);
+
+  useEffect(() => {
+    if (roomIdInput.length !== 0) {
+      const fetchResults = async () => {
+        const res = await fetch(`/api/fetchResults?roomId=${roomIdInput}`);
+        const { data } = await res.json();
+        if (data.length != 0) {
+          const newData = data.filter((result) => result.result !== null);
+          newData.map((item) => {
+            setLeaderBoardData((prev) => [...prev, item]);
+          });
+        }
+      };
+      fetchResults();
+    }
+  }, [roomIdInput]);
+
+  useEffect(() => {
+    if (leaderBoardData.length != 0) {
+      setSortedLeaderBoard(
+        leaderBoardData
+          .map((item) => item.result)
+          .sort((a, b) => b.balance - a.balance)
+      );
+    }
+  }, [leaderBoardData]);
 
   return loading ? (
     <div className={styles.container}>
@@ -161,7 +180,7 @@ export default function AdminPanel() {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.2 }}
                   className={styles.roomIdDisplay}
-                  key={roomId}
+                  key={`room-${roomId}`}
                 >
                   Room ID: <strong>{roomId}</strong>
                 </motion.div>
@@ -171,14 +190,80 @@ export default function AdminPanel() {
 
           {selectedTab === "leaderboard" && (
             <motion.div
-              key="leaderboard"
+              key="leaderboard-input"
               className={styles.formWrapper}
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -30 }}
               transition={{ duration: 0.3 }}
             >
-              <h2>Leaderboard (Coming Soon)</h2>
+              <div className={styles.inputGroup}>
+                <h2>Leaderboard</h2>
+                <input
+                  id="roomIdInput"
+                  type="text"
+                  placeholder="Enter Room Id"
+                  value={roomIdInputTemp} // Temporary value for input field
+                  onChange={(e) => setRoomIdInputTemp(e.target.value)} // Capture the input
+                  className={styles.input}
+                />
+                <button
+                  className={styles.generateBtn}
+                  onClick={() => {
+                    if (!roomIdInputTemp.trim()) {
+                      alert("Please enter a valid Room ID.");
+                      return;
+                    }
+                    setRoomIdInput(roomIdInputTemp); // Set final roomIdInput when submit is clicked
+                    console.log(
+                      "Fetching leaderboard for room:",
+                      roomIdInputTemp
+                    );
+                  }}
+                >
+                  Submit
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {selectedTab === "leaderboard" && leaderBoardData.length !== 0 && (
+            <motion.div
+              key="leaderboard-table"
+              className={styles.table}
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -30 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className={styles.tableWrapper}>
+                <table className={styles.leaderboardTable}>
+                  <thead>
+                    <tr>
+                      <th>Rank</th>
+                      <th>Team Name</th>
+                      <th>Avatar</th>
+                      <th>Balance</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sortedLeaderBoard.map((team, index) => (
+                      <tr key={team.teamId}>
+                        <td>{index + 1}</td>
+                        <td>{team.name}</td>
+                        <td>
+                          <img
+                            src={`/images/avatars/${team.avatar}`}
+                            alt={`${team.name} Avatar`}
+                            className={styles.avatar}
+                          />
+                        </td>
+                        <td>&#8377;{team.balance.toFixed(2)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>

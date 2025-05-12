@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import styles from "./page.module.css";
 import { useRouter } from "next/navigation";
 import gameSessionManager from "@/utils/GameSessionManager";
@@ -8,6 +8,7 @@ import Background from "@/components/Background";
 import ProceedButton from "@/components/ProceedButton";
 import HeaderComponent from "@/components/HeaderComponent";
 import GifOverlay from "@/components/GifOverlay";
+import Loader from "@/components/Loader";
 
 const shopData = [
   {
@@ -61,50 +62,60 @@ export default function BuyIngredientsPage() {
       const session = gameSessionManager.gameSession;
       return session.iterations[session.currentIteration - 1].season;
     });
-  });
+  }, []);
 
   useEffect(() => {
-    const b = parseInt(gameSessionManager.get("balance") || "0", 10);
-    const shopIds =
-      (gameSessionManager.get("iterations") &&
-        gameSessionManager.get("iterations")[
-          gameSessionManager.get("iterations")?.length - 1
-        ]?.selectedShops) ||
-      [];
-    console.log(shopIds);
-    setBalance(b);
-    setInitialBalance(b);
-    setTeamName(gameSessionManager.get("name"));
-    setTeamAvatar(gameSessionManager.get("avatar"));
-    setSelectedShops(shopIds);
-    const filteredShops = shopData.filter((shop) => shopIds.includes(shop.id));
-    setSelectedShopData(filteredShops);
-    const initialQuantities = {};
-    filteredShops.forEach((shop) => {
-      Object.keys(shop.recipe).forEach((ingredient) => {
-        initialQuantities[`${shop.id}_${ingredient}`] =
-          shop.recipe[ingredient].qty;
-      });
-    });
-    setIngredientQuantities(initialQuantities);
-    if (
-      gameSessionManager.get("currentIteration") ===
-        gameSessionManager.get("iterations")?.length - 1 ||
-      !gameSessionManager.get("iterations")
-    ) {
-      alert("Choose shops for this iteration first then buy ingredients!");
-      router.back();
-    } else if (
-      gameSessionManager.get("currentIteration") ===
-        gameSessionManager.get("iterations")?.length &&
-      gameSessionManager.get("iterations")[
-        gameSessionManager.get("iterations").length - 1
-      ].ingredientPurchaseSummary
-    ) {
-      alert(
-        "You've already chosen ingredients for this iteration!, move ahead"
+    if (!gameSessionManager.get("teamId")) {
+      alert("Please form a team first!");
+      setTimeout(() => {
+        router.replace("/");
+      }, [0]);
+      return;
+    } else {
+      const b = parseInt(gameSessionManager.get("balance") || "0", 10);
+      const shopIds =
+        (gameSessionManager.get("iterations") &&
+          gameSessionManager.get("iterations")[
+            gameSessionManager.get("iterations")?.length - 1
+          ]?.selectedShops) ||
+        [];
+      console.log(shopIds);
+      setBalance(b);
+      setInitialBalance(b);
+      setTeamName(gameSessionManager.get("name"));
+      setTeamAvatar(gameSessionManager.get("avatar"));
+      setSelectedShops(shopIds);
+      const filteredShops = shopData.filter((shop) =>
+        shopIds.includes(shop.id)
       );
-      router.push("/sell-items");
+      setSelectedShopData(filteredShops);
+      const initialQuantities = {};
+      filteredShops.forEach((shop) => {
+        Object.keys(shop.recipe).forEach((ingredient) => {
+          initialQuantities[`${shop.id}_${ingredient}`] =
+            shop.recipe[ingredient].qty;
+        });
+      });
+      setIngredientQuantities(initialQuantities);
+      if (
+        gameSessionManager.get("currentIteration") ===
+          gameSessionManager.get("iterations")?.length - 1 ||
+        !gameSessionManager.get("iterations")
+      ) {
+        alert("Choose shops for this iteration first then buy ingredients!");
+        router.back();
+      } else if (
+        gameSessionManager.get("currentIteration") ===
+          gameSessionManager.get("iterations")?.length &&
+        gameSessionManager.get("iterations")[
+          gameSessionManager.get("iterations").length - 1
+        ].ingredientPurchaseSummary
+      ) {
+        alert(
+          "You've already chosen ingredients for this iteration!, move ahead"
+        );
+        router.replace("/sell-items");
+      }
     }
   }, []);
 
@@ -188,94 +199,104 @@ export default function BuyIngredientsPage() {
       gameSessionManager.set("iterations", iterations);
     }
     // alert(`Total Cost: ₹${totalCost}`);
-    router.push("/sell-items");
+    router.replace("/sell-items");
   };
 
   return (
     <div className={styles.container}>
-      <Background
-        url={
-          season && season.name === "Winter season"
-            ? "winterBackground.png"
-            : "noTextBackground.jpg"
-        }
-        styleObj={
-          season?.name === "Rainy season"
-            ? { filter: "brightness(80%) contrast(80%)" }
-            : season?.name === "Summer season"
-            ? { filter: "brightness(140%) contrast(140%)" }
-            : undefined
-        }
-      />
-      <GifOverlay
-        url={
-          season.name === "Winter season"
-            ? "/images/snowfall.gif"
-            : season.name === "Rainy season"
-            ? "/images/rain.gif"
-            : season.name === "Summer season"
-            ? "/images/summerOverlay.gif"
-            : null
-        }
-      />
-      <HeaderComponent
-        avatar={teamAvatar}
-        name={teamName}
-        heading={"Buy Ingredients"}
-        balance={balance}
-      />
-      <div className={styles.cardGrid}>
-        {selectedShopData.map((shop) => (
-          <div key={shop.id} className={styles.card}>
-            <img src={shop.image} alt={shop.name} className={styles.image} />
-            <h3 className={styles.shopName}>{shop.name}</h3>
-            <p className={styles.itemName}>{shop.item}</p>
-            <p className={styles.costLabel}>
-              Ingredients to make 1 {shop.item}:
-            </p>
-            <ul className={styles.recipeList}>
-              {Object.entries(shop.recipe).map(
-                ([ingredient, { qty, cost }]) => (
-                  <li key={ingredient} className={styles.recipeItem}>
-                    {ingredient}: {qty} × ₹{cost} = ₹{qty * cost}
-                  </li>
-                )
-              )}
-            </ul>
-            <div className={styles.sliderGroup}>
-              {Object.entries(shop.recipe).map(
-                ([ingredient, { qty, cost }]) => {
-                  const key = `${shop.id}_${ingredient}`;
-                  const value = ingredientQuantities[key] || qty;
-                  return (
-                    <div key={ingredient} className={styles.sliderItem}>
-                      <label>
-                        {ingredient}: {value} units
-                      </label>
-                      <input
-                        type="range"
-                        min={qty}
-                        max={qty * 1000}
-                        value={value}
-                        step={qty * 10}
-                        onChange={(e) =>
-                          handleSliderChange(
-                            shop.id,
-                            ingredient,
-                            e.target.value
-                          )
-                        }
-                        className={styles.slider}
-                      />
-                    </div>
-                  );
-                }
-              )}
-            </div>
+      {teamAvatar.length != 0 && teamName.length != 0 && balance.length != 0 ? (
+        <>
+          <Background
+            url={
+              season && season.name === "Winter season"
+                ? "winterBackground.png"
+                : "noTextBackground.jpg"
+            }
+            styleObj={
+              season?.name === "Rainy season"
+                ? { filter: "brightness(80%) contrast(80%)" }
+                : season?.name === "Summer season"
+                ? { filter: "brightness(140%) contrast(140%)" }
+                : undefined
+            }
+          />
+          <GifOverlay
+            url={
+              season.name === "Winter season"
+                ? "/images/snowfall.gif"
+                : season.name === "Rainy season"
+                ? "/images/rain.gif"
+                : season.name === "Summer season"
+                ? "/images/summerOverlay.gif"
+                : null
+            }
+          />
+          <HeaderComponent
+            avatar={teamAvatar}
+            name={teamName}
+            heading={"Buy Ingredients"}
+            balance={balance}
+          />
+          <div className={styles.cardGrid}>
+            {selectedShopData.map((shop) => (
+              <div key={shop.id} className={styles.card}>
+                <img
+                  src={shop.image}
+                  alt={shop.name}
+                  className={styles.image}
+                />
+                <h3 className={styles.shopName}>{shop.name}</h3>
+                <p className={styles.itemName}>{shop.item}</p>
+                <p className={styles.costLabel}>
+                  Ingredients to make 1 {shop.item}:
+                </p>
+                <ul className={styles.recipeList}>
+                  {Object.entries(shop.recipe).map(
+                    ([ingredient, { qty, cost }]) => (
+                      <li key={ingredient} className={styles.recipeItem}>
+                        {ingredient}: {qty} × ₹{cost} = ₹{qty * cost}
+                      </li>
+                    )
+                  )}
+                </ul>
+                <div className={styles.sliderGroup}>
+                  {Object.entries(shop.recipe).map(
+                    ([ingredient, { qty, cost }]) => {
+                      const key = `${shop.id}_${ingredient}`;
+                      const value = ingredientQuantities[key] || qty;
+                      return (
+                        <div key={ingredient} className={styles.sliderItem}>
+                          <label>
+                            {ingredient}: {value} units
+                          </label>
+                          <input
+                            type="range"
+                            min={qty}
+                            max={qty * 1000}
+                            value={value}
+                            step={qty * 10}
+                            onChange={(e) =>
+                              handleSliderChange(
+                                shop.id,
+                                ingredient,
+                                e.target.value
+                              )
+                            }
+                            className={styles.slider}
+                          />
+                        </div>
+                      );
+                    }
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
-      </div>
-      <ProceedButton func={handleProceed}>Proceed to Sell</ProceedButton>
+          <ProceedButton func={handleProceed}>Proceed to Sell</ProceedButton>
+        </>
+      ) : (
+        <Loader />
+      )}
     </div>
   );
 }

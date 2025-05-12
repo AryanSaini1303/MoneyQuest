@@ -8,6 +8,7 @@ import ProceedButton from "@/components/ProceedButton";
 import { useRouter } from "next/navigation";
 import HeaderComponent from "@/components/HeaderComponent";
 import GifOverlay from "@/components/GifOverlay";
+import Loader from "@/components/Loader";
 
 const shops = [
   { id: 1, name: "Coffee", price: 20000, image: "/images/shops/coffee.png" },
@@ -54,6 +55,13 @@ export default function SelectShopsPage() {
   const [iteration, setIteration] = useState();
 
   useEffect(() => {
+    function handlePopState() {
+      console.log("pop");
+    }
+    window.addEventListener("popstate", handlePopState);
+  }, []);
+
+  useEffect(() => {
     const savedTeamId = sessionStorage.getItem("teamId");
     const savedRoomId = sessionStorage.getItem("roomId");
     if (savedTeamId) setTeamId(savedTeamId);
@@ -70,21 +78,40 @@ export default function SelectShopsPage() {
     const currentIteration = session.currentIteration || 1;
     setIteration(currentIteration);
 
+    const getTeamData = async () => {
+      const res = await fetch(
+        `/api/getTeamData?team_id=${sessionStorage.getItem("teamId")}`
+      );
+      const data = await res.json();
+      // console.log(data);
+      data.success && setTeamData(data.data[0]);
+      if (data.error) {
+        alert("Please form a team first!");
+        setTimeout(() => {
+          router.replace("/");
+        }, [0]);
+        return;
+      }
+      gameSessionManager.set("name", data.data[0].name);
+      gameSessionManager.set("avatar", data.data[0].avatar);
+    };
+    getTeamData();
+
     const cheapestShop = shops.reduce((min, shop) =>
       shop.price < min.price ? shop : min
     );
     if (cheapestShop.price > (savedBalance || 100000)) {
       alert("You don't have enough balance to invest in any shop. Game Over.");
       setTimeout(() => {
-        router.push("/");
+        router.replace("/");
       }, 0);
-      // The issue was that `router.push("/")` inside `useEffect` after an `alert()` didn’t work reliably due to the blocking nature of `alert()` during initial render. Wrapping the navigation in `setTimeout(() => router.push("/"), 0)` ensures it runs after the alert and React initialization.
+      // The issue was that `router.replace("/")` inside `useEffect` after an `alert()` didn’t work reliably due to the blocking nature of `alert()` during initial render. Wrapping the navigation in `setTimeout(() => router.replace("/"), 0)` ensures it runs after the alert and React initialization.
       return;
     }
 
     if (currentIteration && currentIteration === session.iterations?.length) {
       alert("You've already chosen shops for this iteration!, move ahead");
-      router.push("/buy-ingredients");
+      router.replace("/buy-ingredients");
       return;
     }
   }, []);
@@ -94,31 +121,6 @@ export default function SelectShopsPage() {
       gameSessionManager.set("currentIteration", iteration);
     }
   }, [iteration]);
-
-  useEffect(() => {
-    const getTeamData = async () => {
-      const res = await fetch(
-        `/api/getTeamData?team_id=${sessionStorage.getItem("teamId")}`
-      );
-      const data = await res.json();
-      // console.log(data);
-      data.success && setTeamData(data.data[0]);
-      gameSessionManager.set("name", data.data[0].name);
-      gameSessionManager.set("avatar", data.data[0].avatar);
-    };
-    getTeamData();
-  }, []);
-
-  useEffect(() => {
-    const handleBack = () => {
-      window.history.pushState(null, "", window.location.href);
-    };
-    window.history.pushState(null, "", window.location.href);
-    window.addEventListener("popstate", handleBack);
-    return () => {
-      window.removeEventListener("popstate", handleBack);
-    };
-  }, []);
 
   const calculateRemainingBalance = (newSelection) => {
     const totalCost = newSelection.reduce((acc, shopId) => {
@@ -167,7 +169,7 @@ export default function SelectShopsPage() {
     gameSessionManager.set("balance", balance);
     gameSessionManager.set("teamId", teamId);
     gameSessionManager.set("roomId", roomId);
-    router.push("/buy-ingredients");
+    router.replace("/buy-ingredients");
   };
 
   return (
@@ -197,41 +199,47 @@ export default function SelectShopsPage() {
             : null
         }
       />
-      <HeaderComponent
-        avatar={teamData.avatar}
-        name={teamData.name}
-        heading={"Select Shops"}
-        balance={balance}
-      />
-      <div className={styles.container}>
-        <div className={styles.seasonCard}>
-          <h3 style={{ margin: "0" }}>Iteration: {iteration}</h3>
-          <h2 className={styles.seasonTitle}>{season.name}</h2>
-          <p className={styles.seasonDesc}>{season.description}</p>
-          {/* <p className={styles.note}>Note: You can invest in maximum 2 shops</p> */}
-        </div>
-        <div className={styles.shopList}>
-          {shops.map((shop) => (
-            <div
-              key={shop.id}
-              className={`${styles.shopCard} ${
-                selectedShops.includes(shop.id) ? styles.selected : ""
-              }`}
-              onClick={() => handleShopSelection(shop.id)}
-            >
-              <img src={shop.image} alt={shop.name} />
-              <h2>{shop.name}</h2>
-              <p>Price: ₹{shop.price}</p>
+      {season && Object.keys(teamData).length != 0 ? (
+        <>
+          <HeaderComponent
+            avatar={teamData.avatar}
+            name={teamData.name}
+            heading={"Select Shops"}
+            balance={balance}
+          />
+          <div className={styles.container}>
+            <div className={styles.seasonCard}>
+              <h3 style={{ margin: "0" }}>Iteration: {iteration}</h3>
+              <h2 className={styles.seasonTitle}>{season.name}</h2>
+              <p className={styles.seasonDesc}>{season.description}</p>
+              {/* <p className={styles.note}>Note: You can invest in maximum 2 shops</p> */}
             </div>
-          ))}
-        </div>
-        <ProceedButton
-          func={handleSubmit}
-          disabled={selectedShops.length === 0}
-        >
-          Proceed to Next Page
-        </ProceedButton>
-      </div>
+            <div className={styles.shopList}>
+              {shops.map((shop) => (
+                <div
+                  key={shop.id}
+                  className={`${styles.shopCard} ${
+                    selectedShops.includes(shop.id) ? styles.selected : ""
+                  }`}
+                  onClick={() => handleShopSelection(shop.id)}
+                >
+                  <img src={shop.image} alt={shop.name} />
+                  <h2>{shop.name}</h2>
+                  <p>Price: ₹{shop.price}</p>
+                </div>
+              ))}
+            </div>
+            <ProceedButton
+              func={handleSubmit}
+              disabled={selectedShops.length === 0}
+            >
+              Proceed to Next Page
+            </ProceedButton>
+          </div>
+        </>
+      ) : (
+        <Loader />
+      )}
     </>
   );
 }

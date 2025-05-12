@@ -39,12 +39,11 @@ export default function Home() {
         // console.log(data);
         sessionStorage.setItem("roomId", roomId);
         if (data.valid) {
-          router.push(`/home`);
-        }
-        else{
+          router.replace(`/home`); // "router.replace" is used here and in all the further navigation as we don't want the user the to go back and if the browser window doesn't have history of navigation then it won't be able to go back. "router.replace" does just that, it adds a page/url to the navigation without adding it to the navigation history
+        } else {
           alert("Wrong room id!, please try again");
           setLoading(false);
-          setSubmit(false)
+          setSubmit(false);
         }
         setLoading(false);
       };

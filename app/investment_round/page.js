@@ -164,7 +164,7 @@ export default function InvestmentRoundPage() {
       const randomNumber = Math.floor(Math.random() * 3);
       return seasons[randomNumber];
     });
-  }, []);// this sets the season at random
+  }, []); // this sets the season at random
 
   useEffect(() => {
     if (teamId == null) {
@@ -296,7 +296,7 @@ export default function InvestmentRoundPage() {
             <button
               className={styles.submit}
               onClick={() => {
-                router.push("/");
+                router.replace("/");
                 sessionStorage.clear();
               }}
             >

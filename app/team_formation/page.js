@@ -53,7 +53,7 @@ export default function TeamFormationPage() {
         // console.log("data", data);
         // data.success&&console.log(typeof(data.data[0].id));
         sessionStorage.setItem("teamId", teamId);
-        data.success && router.push(`/select-shop`);
+        data.success && router.replace(`/select-shop`);
         setLoading(false);
       };
       addTeamMembers();

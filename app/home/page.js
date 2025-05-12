@@ -64,7 +64,7 @@ export default function Home() {
         }
         // data.success&&console.log(typeof(data.data[0].id));
         sessionStorage.setItem("teamId", data?.data[0].id); // using sessionStorage to store the "teamId" of the user currently active in the tab, once the tab closes then the data is erased. Not using localStorage as it keeps the data forever until explicitly deleted manually
-        data.success && router.push(`/team_formation`);
+        data.success && router.replace(`/team_formation`);
         setLoading(false);
       };
       saveTeamData();
@@ -112,7 +112,7 @@ export default function Home() {
         </section>
         {teamName.length != 0 && (
           <button className={styles.submit} onClick={() => setSubmit(true)}>
-            {loading?"Saving...":"Let's begin"}
+            {loading ? "Saving..." : "Let's begin"}
           </button>
         )}
       </section>

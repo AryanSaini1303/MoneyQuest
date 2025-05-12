@@ -126,8 +126,8 @@
 
 .formWrapper {
   max-width: 500px;
-  margin: 0 auto;
-  background: linear-gradient(rgba(255, 255, 255, 0.685),rgba(0, 0, 0, 0.232));
+  margin: 2rem auto;
+  background: linear-gradient(rgba(255, 255, 255, 0.685), rgba(0, 0, 0, 0.232));
   box-shadow: 0 0.5rem 0.4rem black;
   padding: 1rem 2rem;
   backdrop-filter: blur(5px);
@@ -163,4 +163,65 @@
   border-radius: 8px;
   font-size: 18px;
   border: 1px solid #444;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+.input {
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+/* Leaderboard Table */
+.leaderboardTable {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: red;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  margin: 2 auto;
+  padding: 20px;
+  text-align: left;
+}
+
+.leaderboardTable th,
+.leaderboardTable td {
+  padding: 12px;
+  text-align: center;
+}
+
+.leaderboardTable th {
+  background-color: #f4f4f9;
+  color: #333;
+  font-weight: bold;
+}
+
+.leaderboardTable td {
+  background-color: #ffffff;
+  color: #555;
+}
+
+.leaderboardTable tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.leaderboardTable tr:hover {
+  background-color: #f1f1f1;
+  cursor: pointer;
+}
+
+/* Avatar Styling */
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #ddd;
 }
