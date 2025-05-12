@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import styles from "./page.module.css";
 import Background from "@/components/Background";
 import Loader from "@/components/Loader";
@@ -160,6 +160,13 @@ export default function InvestmentRoundPage() {
   }, []);
 
   useEffect(() => {
+    setSeason(() => {
+      const randomNumber = Math.floor(Math.random() * 3);
+      return seasons[randomNumber];
+    });
+  }, []);// this sets the season at random
+
+  useEffect(() => {
     if (teamId == null) {
       alert("Unauthorised!");
       router.back();
@@ -201,17 +208,17 @@ export default function InvestmentRoundPage() {
     getTeamData();
   }, []);
 
-  useEffect(() => {
-    const getSeason = async () => {
-      const res = await fetch(
-        `/api/getSeason?id=${sessionStorage.getItem("roomId")}`
-      );
-      const data = await res.json();
-      // console.log(data);
-      data.success && setSeason(seasons[data.data[0].season]);
-    };
-    getSeason();
-  }, []);
+  // useEffect(() => {
+  //   const getSeason = async () => {
+  //     const res = await fetch(
+  //       `/api/getSeason?id=${sessionStorage.getItem("roomId")}`
+  //     );
+  //     const data = await res.json();
+  //     // console.log(data);
+  //     data.success && setSeason(seasons[data.data[0].season]);
+  //   };
+  //   getSeason();
+  // }, []);
 
   useEffect(() => {
     if (results.length !== 0) {

@@ -15,7 +15,7 @@ export default function AdminPanel() {
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const [season, setSeason] = useState("");
+  // const [season, setSeason] = useState("");
 
   const signIn = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
@@ -45,10 +45,9 @@ export default function AdminPanel() {
   const generateRoomId = () => {
     const id = "R-" + Math.random().toString(36).substring(2, 8).toUpperCase();
     setRoomId(id);
-    const season = Math.floor(Math.random() * 3);
-    setSeason(season);
+    // const season = Math.floor(Math.random() * 3);
+    // setSeason(season);
     // console.log(season);
-    // Optional: Send to Supabase API route here
   };
 
   useEffect(() => {
@@ -70,7 +69,8 @@ export default function AdminPanel() {
   }, []);
 
   useEffect(() => {
-    if (roomId.length !== 0 && season.length !== 0) {
+    // if (roomId.length !== 0 && season.length !== 0) {
+    if (roomId.length !== 0) {
       const createRoom = async () => {
         try {
           const response = await fetch("/api/createRoom", {
@@ -78,7 +78,8 @@ export default function AdminPanel() {
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ roomId, season }),
+            // body: JSON.stringify({ roomId, season }),
+            body: JSON.stringify({ roomId }),
           });
           const result = await response.json();
           if (!response.ok) {
@@ -95,7 +96,8 @@ export default function AdminPanel() {
       };
       createRoom();
     }
-  }, [roomId, season]);
+    // }, [roomId, season]);
+  }, [roomId]);
 
   return loading ? (
     <div className={styles.container}>

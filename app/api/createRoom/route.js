@@ -3,9 +3,11 @@ import { supabase } from "@/lib/supabaseClient";
 
 export async function POST(request) {
   try {
-    const { roomId, season } = await request.json();
+    // const { roomId, season } = await request.json();
+    const { roomId } = await request.json();
 
-    if (!roomId || !season) {
+    // if (!roomId || !season) {
+    if (!roomId) {
       return NextResponse.json(
         { error: "Room ID is required" },
         { status: 400 }
@@ -14,7 +16,8 @@ export async function POST(request) {
 
     const { data, error } = await supabase
       .from("rooms")
-      .insert([{ room_id: roomId, season: season }]);
+      // .insert([{ room_id: roomId, season: season }]);
+      .insert([{ room_id: roomId }]);
 
     if (error) {
       console.error("Supabase insert error:", error.message);
