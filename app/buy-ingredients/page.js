@@ -35,7 +35,7 @@ const shopData = [
   {
     id: 3,
     name: "Ice Cream",
-    image: "/images/shops/icecream.png",
+    image: "/images/shops/iceCream.png",
     item: "Ice Cream Scoop",
     recipe: {
       Milk: { qty: 2, cost: 3 },
