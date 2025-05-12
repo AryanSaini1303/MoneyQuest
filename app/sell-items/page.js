@@ -285,7 +285,9 @@ const SellItems = () => {
           <div className={styles.card} key={shop.shopName}>
             <img
               src={`/images/shops/${
-                shop.shopName == "Ice Cream" ? "iceCream" : shop.shopName
+                shop.shopName == "Ice Cream"
+                  ? "iceCream"
+                  : shop.shopName.toLowerCase()
               }.png`}
               alt={shop.shopName}
               className={styles.shopImage}
