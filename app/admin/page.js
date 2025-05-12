@@ -70,29 +70,29 @@ export default function AdminPanel() {
   }, []);
 
   useEffect(() => {
-    const createRoom = async () => {
-      try {
-        const response = await fetch("/api/createRoom", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ roomId, season }),
-        });
-        const result = await response.json();
-        if (!response.ok) {
-          console.error("Room creation failed:", result.error);
-          alert("Failed to create room.");
-          setRoomId("");
-        } else {
-          // console.log("Room created successfully:", result);
-          console.log("Room created successfully:");
-        }
-      } catch (error) {
-        console.error("Error while creating room:", error);
-      }
-    };
     if (roomId.length !== 0 && season.length !== 0) {
+      const createRoom = async () => {
+        try {
+          const response = await fetch("/api/createRoom", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ roomId, season }),
+          });
+          const result = await response.json();
+          if (!response.ok) {
+            console.error("Room creation failed:", result.error);
+            alert("Failed to create room.");
+            setRoomId("");
+          } else {
+            // console.log("Room created successfully:", result);
+            console.log("Room created successfully:");
+          }
+        } catch (error) {
+          console.error("Error while creating room:", error);
+        }
+      };
       createRoom();
     }
   }, [roomId, season]);
