@@ -98,7 +98,7 @@ const shops = [
 
 export default function InvestmentRoundPage() {
   const [teamId, setTeamId] = useState("");
-  const teamBalance = 10000;
+  const teamBalance = 100000;
   const [investments, setInvestments] = useState({});
   const [teamData, setTeamData] = useState("");
   const [season, setSeason] = useState("");

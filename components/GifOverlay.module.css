@@ -1,3 +1,4 @@
 .snowfall {
   position: fixed; /*use this shit more often, very useful*/
+  z-index: -1;
 }

@@ -1,0 +1,89 @@
+.header {
+  width: 95%;
+  margin: 2.5rem auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(210, 210, 210, 0.549);
+  padding: 0.5rem 1rem;
+  border: 2px solid white;
+  border-radius: 10px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0.3rem 0.3rem 0.3rem black;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.headerInfoContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.teamInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.avatar {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 999px;
+  object-fit: cover;
+  border: 2px solid #ddd;
+  background: linear-gradient(#a8bce7, #e48db7);
+  animation: avatarReveal 1s ease-in-out forwards;
+}
+@keyframes avatarReveal {
+  from {
+    transform: rotateY(360deg);
+    opacity: 0;
+  }
+  to {
+    transform: rotateY(0deg);
+    opacity: 1;
+  }
+}
+
+.teamName {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #222;
+  margin: 0;
+}
+
+.balanceBox {
+  background-color: #fff;
+  padding: 0.75rem 1.2rem;
+  border-radius: 0.8rem;
+  box-shadow: 4px 4px 1px rgba(0, 0, 0, 0.571);
+  font-weight: 600;
+  color: green;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.4rem;
+  border: 1px solid #e2e2e2;
+  min-width: 9em;
+}
+
+.balanceLabel {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.heading {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.subtext {
+  color: #666;
+  margin: 0;
+  font-size: 1rem;
+}

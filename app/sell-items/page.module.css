@@ -1,0 +1,111 @@
+.container {
+  padding: 1rem;
+  font-family: Arial, sans-serif;
+}
+
+.heading {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #333;
+  text-align: center;
+}
+
+.grid {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  padding: 1.25rem;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  transition: all 0.3s ease-in-out;
+  margin: 1rem 0;
+  height: fit-content;
+}
+
+.card:hover {
+  cursor: pointer;
+  transform: translateY(-4px);
+  box-shadow: 0px 8px 2px rgba(0, 0, 0, 0.691);
+  border: 2px solid white;
+}
+
+.card h3 {
+  margin-bottom: 0.5rem;
+  color: #2c3e50;
+}
+
+.card p {
+  margin: 0.4rem 0;
+  color: #555;
+}
+
+.card input[type="number"] {
+  padding: 0.3rem 0.6rem;
+  font-size: 1rem;
+  width: 100px;
+  margin-top: 0.4rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.shopHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.shopImage {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  margin-bottom: 10px;
+  border-radius: 8px;
+  scale: 1.2;
+  filter: drop-shadow(0.35rem 0.35rem 0.1rem rgba(0, 0, 0, 0.989));
+}
+
+.priceInput {
+  margin-top: 0.5rem;
+  font-weight: bold;
+}
+
+.salesDetails {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.05);
+}
+.confirmedPrice {
+  font-size: 1rem;
+  margin-top: 10px;
+  font-weight: bold;
+  color: #1b5e20;
+}
+
+.submitButton {
+  margin: 20px auto;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #1e90ff;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  display: block;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.submitButton:hover {
+  background-color: #0d71d8;
+}

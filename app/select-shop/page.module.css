@@ -1,0 +1,125 @@
+.container {
+  width: 80%;
+  margin: 0 auto;
+  text-align: center;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container h1 {
+  font-size: 4rem;
+  font-weight: bold;
+  margin: 0.8rem;
+}
+
+.shopList {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.shopCard {
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  padding: 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  border: 2px solid rgba(0, 0, 0, 0);
+  margin: 2rem;
+  overflow: hidden;
+}
+
+.shopCard img {
+  width: 15rem;
+  height: 15rem;
+  scale: 1.8;
+  object-fit: contain;
+  filter: drop-shadow(0.3rem 0.3rem 0.05rem rgba(0, 0, 0, 0.989));
+}
+
+.shopCard:hover {
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.selected {
+  background-color: white;
+  border: 2px solid black;
+}
+
+.submitButton {
+  padding: 0.8rem 2rem;
+  margin: 1rem auto;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(90, 120, 240, 0.4);
+  z-index: 1000;
+  margin-bottom: 2.5rem;
+  transition: 0.3s all ease-in-out;
+  background: linear-gradient(135deg, red, #8298f8);
+}
+
+.submitButton:disabled {
+  background: linear-gradient(135deg, grey, grey);
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
+.submitButton:hover:not(:disabled) {
+  background: linear-gradient(135deg, red, #8298f8);
+}
+
+.seasonCard {
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  padding: 1rem 2rem;
+  border-radius: 1.25rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  width: 80%;
+  margin: auto;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.seasonTitle {
+  color: #3f51b5;
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0.8rem 0
+}
+
+.seasonDesc {
+  color: #333;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  font-weight: 400;
+  text-align: left;
+  margin: 0;
+}
+
+.seasonCard .note {
+  color: red;
+  font-size: 0.9rem;
+  animation: notePulse 2s ease-in-out infinite;
+}
+@keyframes notePulse {
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
