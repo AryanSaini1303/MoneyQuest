@@ -19,6 +19,7 @@ export default function AdminPanel() {
   const [roomIdInput, setRoomIdInput] = useState(""); // Final state for room ID when submit is clicked
   const [leaderBoardData, setLeaderBoardData] = useState([]);
   const [sortedLeaderBoard, setSortedLeaderBoard] = useState([]);
+  const [leaderboardLoading, setLeaderboardLoading] = useState(false);
 
   const signIn = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
@@ -93,6 +94,7 @@ export default function AdminPanel() {
   }, [roomId]);
 
   useEffect(() => {
+    setLeaderboardLoading(true);
     if (roomIdInput.length !== 0) {
       const fetchResults = async () => {
         const res = await fetch(`/api/fetchResults?roomId=${roomIdInput}`);
@@ -102,6 +104,7 @@ export default function AdminPanel() {
           newData.map((item) => {
             setLeaderBoardData((prev) => [...prev, item]);
           });
+          setLeaderboardLoading(false);
         }
       };
       fetchResults();
@@ -237,32 +240,36 @@ export default function AdminPanel() {
               transition={{ duration: 0.3 }}
             >
               <div className={styles.tableWrapper}>
-                <table className={styles.leaderboardTable}>
-                  <thead>
-                    <tr>
-                      <th>Rank</th>
-                      <th>Team Name</th>
-                      <th>Avatar</th>
-                      <th>Balance</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {sortedLeaderBoard.map((team, index) => (
-                      <tr key={team.teamId}>
-                        <td>{index + 1}</td>
-                        <td>{team.name}</td>
-                        <td>
-                          <img
-                            src={`/images/avatars/${team.avatar}`}
-                            alt={`${team.name} Avatar`}
-                            className={styles.avatar}
-                          />
-                        </td>
-                        <td>&#8377;{team.balance.toFixed(2)}</td>
+                {leaderboardLoading ? (
+                  <Loader />
+                ) : (
+                  <table className={styles.leaderboardTable}>
+                    <thead>
+                      <tr>
+                        <th>Rank</th>
+                        <th>Team Name</th>
+                        <th>Avatar</th>
+                        <th>Balance</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {sortedLeaderBoard.map((team, index) => (
+                        <tr key={team.teamId}>
+                          <td>{index + 1}</td>
+                          <td>{team.name}</td>
+                          <td>
+                            <img
+                              src={`/images/avatars/${team.avatar}`}
+                              alt={`${team.name} Avatar`}
+                              className={styles.avatar}
+                            />
+                          </td>
+                          <td>&#8377;{team.balance.toFixed(2)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
               </div>
             </motion.div>
           )}
