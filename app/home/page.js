@@ -45,31 +45,60 @@ export default function Home() {
   }
 
   useEffect(() => {
-    if (submit) {
-      setLoading(true);
-      const saveTeamData = async () => {
-        const response = await fetch("/api/saveTeamData", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            name: teamName,
-            avatar: chosenAvatar,
-            room_id: roomId,
-          }),
-        });
-        const data = await response.json();
-        // console.log("data", data);
-        if (data.message?.startsWith("duplicate key")) {
-          alert("You already have a team");
+    const handleSubmit = async () => {
+      if (submit && !loading) {
+        setLoading(true);
+
+        // Step 1: Check duplicate name
+        const res = await fetch(`/api/fetchTeamNames?room_id=${roomId}`);
+        const data = await res.json();
+
+        if (data.success) {
+          const namesList = data.data;
+          const sameName = namesList.some(
+            (item) => item.name.toLowerCase() === teamName.toLowerCase()
+          );
+
+          if (sameName) {
+            alert(
+              "This name is already taken!, please think of something else"
+            );
+            setLoading(false);
+            setSubmit(false); // reset submit so effect can rerun
+            return;
+          }
+
+          // Step 2: Save team data
+          const response = await fetch("/api/saveTeamData", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: teamName,
+              avatar: chosenAvatar,
+              room_id: roomId,
+            }),
+          });
+
+          const result = await response.json();
+
+          if (result.message?.startsWith("duplicate key")) {
+            alert("You already have a team");
+            setLoading(false);
+            setSubmit(false);
+            return;
+          }
+
+          sessionStorage.setItem("teamId", result?.data[0].id);
+          result.success && router.replace(`/team_formation`);
+        } else {
+          alert("Failed to fetch team names. Try again.");
+          setLoading(false);
         }
-        // data.success&&console.log(typeof(data.data[0].id));
-        sessionStorage.setItem("teamId", data?.data[0].id); // using sessionStorage to store the "teamId" of the user currently active in the tab, once the tab closes then the data is erased. Not using localStorage as it keeps the data forever until explicitly deleted manually
-        data.success && router.replace(`/team_formation`);
-        setLoading(false);
-      };
-      saveTeamData();
-    }
-  }, [chosenAvatar, teamName, submit]);
+      }
+    };
+
+    handleSubmit();
+  }, [submit]); // Just depend on submit
 
   return (
     <div className="wrapper">
