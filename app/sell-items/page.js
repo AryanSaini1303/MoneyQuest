@@ -190,15 +190,17 @@ const SellItems = () => {
     const updated = shopProductions.map((shop) => {
       const price = parseFloat(inputValues[shop.shopName]);
       const salePercentage = getSalePercentage(price, shop.shopName);
-      const unitsSold = Math.floor(shop.producibleCount * salePercentage);
-      let totalRevenue = unitsSold * price;
-      const operationalCost = unitsSold * OPERATIONAL_COSTS[shop.shopName];
       const currentSeason = gameSessionManager.get("currentSeason");
       const { season, boostMultiplier, penaltyMultiplier } =
         SEASONAL_BOOSTS[shop.shopName];
       const seasonalMultiplier =
         currentSeason === season ? boostMultiplier : penaltyMultiplier;
-      totalRevenue *= seasonalMultiplier;
+      const unitsSold = Math.floor(
+        shop.producibleCount * salePercentage * seasonalMultiplier
+      );
+      let totalRevenue = unitsSold * price;
+      const operationalCost = unitsSold * OPERATIONAL_COSTS[shop.shopName];
+      // totalRevenue *= seasonalMultiplier;
       const netProfit = totalRevenue - operationalCost;
       const totalInvestment = shop.ingredients.reduce(
         (sum, ing) => sum + ing.unitCost * ing.quantity,
@@ -372,8 +374,8 @@ const SellItems = () => {
                     <p>Total Revenue: ₹{shop.totalRevenue.toFixed(2)}</p>
                     <p>Operational Cost: ₹{shop.operationalCost.toFixed(2)}</p>
                     <p>Total Investment: ₹{shop.totalInvestment.toFixed(2)}</p>
-                    <p>
-                      <strong>Net Profit: ₹{shop.netProfit.toFixed(2)}</strong>
+                    <p style={(shop.netProfit.toFixed(2) - shop.totalInvestment.toFixed(2)) < 0?{color:"red"}:null}>
+                      <strong>Net Profit: ₹{shop.netProfit.toFixed(2) - shop.totalInvestment.toFixed(2)}</strong>
                     </p>
                   </div>
                 )}
