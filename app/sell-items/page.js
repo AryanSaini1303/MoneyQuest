@@ -256,7 +256,10 @@ const SellItems = () => {
   };
 
   useEffect(() => {
-    if (shopsPurchaseCost !== 0) {
+    if (
+      shopsPurchaseCost !== 0 &&
+      gameSessionManager.get("currentIteration") !== 7
+    ) {
       const prevBalance = gameSessionManager.get("balance");
       // console.log("prevBalance", prevBalance);
       gameSessionManager.set("balance", prevBalance + shopsPurchaseCost);
@@ -383,7 +386,7 @@ const SellItems = () => {
                           shop.totalInvestment.toFixed(2) <
                         0
                           ? { color: "red" }
-                          : null
+                          : { color: "green" }
                       }
                     >
                       <strong>
