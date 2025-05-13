@@ -254,8 +254,8 @@ const SellItems = () => {
 
   useEffect(() => {
     if (shopsPurchaseCost !== 0) {
-      console.log(shopsPurchaseCost);
       const prevBalance = gameSessionManager.get("balance");
+      console.log("prevBalance", prevBalance);
       gameSessionManager.set("balance", prevBalance + shopsPurchaseCost);
       setBalance(gameSessionManager.get("balance"));
     }
@@ -374,8 +374,20 @@ const SellItems = () => {
                     <p>Total Revenue: ₹{shop.totalRevenue.toFixed(2)}</p>
                     <p>Operational Cost: ₹{shop.operationalCost.toFixed(2)}</p>
                     <p>Total Investment: ₹{shop.totalInvestment.toFixed(2)}</p>
-                    <p style={(shop.netProfit.toFixed(2) - shop.totalInvestment.toFixed(2)) < 0?{color:"red"}:null}>
-                      <strong>Net Profit: ₹{shop.netProfit.toFixed(2) - shop.totalInvestment.toFixed(2)}</strong>
+                    <p
+                      style={
+                        shop.netProfit.toFixed(2) -
+                          shop.totalInvestment.toFixed(2) <
+                        0
+                          ? { color: "red" }
+                          : null
+                      }
+                    >
+                      <strong>
+                        Net Profit: ₹
+                        {shop.netProfit.toFixed(2) -
+                          shop.totalInvestment.toFixed(2)}
+                      </strong>
                     </p>
                   </div>
                 )}
