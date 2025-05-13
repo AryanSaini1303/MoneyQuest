@@ -255,7 +255,7 @@ const SellItems = () => {
   useEffect(() => {
     if (shopsPurchaseCost !== 0) {
       const prevBalance = gameSessionManager.get("balance");
-      console.log("prevBalance", prevBalance);
+      // console.log("prevBalance", prevBalance);
       gameSessionManager.set("balance", prevBalance + shopsPurchaseCost);
       setBalance(gameSessionManager.get("balance"));
     }

@@ -54,12 +54,12 @@ export default function SelectShopsPage() {
   const router = useRouter();
   const [iteration, setIteration] = useState();
 
-  useEffect(() => {
-    function handlePopState() {
-      console.log("pop");
-    }
-    window.addEventListener("popstate", handlePopState);
-  }, []);
+  // useEffect(() => {
+  //   function handlePopState() {
+  //     console.log("pop");
+  //   }
+  //   window.addEventListener("popstate", handlePopState);
+  // }, []);
 
   useEffect(() => {
     const savedTeamId = sessionStorage.getItem("teamId");
@@ -127,7 +127,7 @@ export default function SelectShopsPage() {
       const shop = shops.find((s) => s.id === shopId);
       return acc + shop.price;
     }, 0);
-    console.log((gameSessionManager.get("balance") || 100000) - totalCost);
+    // console.log((gameSessionManager.get("balance") || 100000) - totalCost);
     return (gameSessionManager.get("balance") || 100000) - totalCost;
   };
 

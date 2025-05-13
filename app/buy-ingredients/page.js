@@ -79,7 +79,7 @@ export default function BuyIngredientsPage() {
             gameSessionManager.get("iterations")?.length - 1
           ]?.selectedShops) ||
         [];
-      console.log(shopIds);
+      // console.log(shopIds);
       setBalance(b);
       setInitialBalance(b);
       setTeamName(gameSessionManager.get("name"));
