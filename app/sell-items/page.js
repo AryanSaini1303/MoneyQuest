@@ -87,6 +87,9 @@ const getSalePercentage = (price, shopName) => {
     const sale = 0.9 * Math.pow(1 - decayFactor, 2); // quadratic fall
     return Math.max(0.1, sale);
   }
+  if (price > high) {
+    return 0;
+  }
   return 0.02 + Math.random() * 0.03;
 };
 
