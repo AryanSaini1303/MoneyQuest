@@ -127,7 +127,7 @@ export default function SelectShopsPage() {
       const shop = shops.find((s) => s.id === shopId);
       return acc + shop.price;
     }, 0);
-    return gameSessionManager.get("balance") - totalCost;
+    return gameSessionManager.get("balance")||100000 - totalCost;
   };
 
   const handleShopSelection = (shopId) => {
