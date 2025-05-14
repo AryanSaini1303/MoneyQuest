@@ -49,8 +49,12 @@ const shopData = [
 export default function BuyIngredientsPage() {
   const [selectedShops, setSelectedShops] = useState([]);
   const [ingredientQuantities, setIngredientQuantities] = useState({});
-  const [balance, setBalance] = useState(0);
-  const [initialBalance, setInitialBalance] = useState(0);
+  const [balance, setBalance] = useState(
+    parseInt(gameSessionManager.get("balance") || "0", 10)
+  );
+  const [initialBalance, setInitialBalance] = useState(
+    parseInt(gameSessionManager.get("balance") || "0", 10)
+  );
   const [teamName, setTeamName] = useState("");
   const [teamAvatar, setTeamAvatar] = useState("");
   const router = useRouter();
@@ -73,6 +77,7 @@ export default function BuyIngredientsPage() {
       return;
     } else {
       const b = parseInt(gameSessionManager.get("balance") || "0", 10);
+      // console.log(b);
       const shopIds =
         (gameSessionManager.get("iterations") &&
           gameSessionManager.get("iterations")[
@@ -80,8 +85,8 @@ export default function BuyIngredientsPage() {
           ]?.selectedShops) ||
         [];
       // console.log(shopIds);
-      setBalance(b);
-      setInitialBalance(b);
+      // setBalance(b);
+      // setInitialBalance(b);
       setTeamName(gameSessionManager.get("name"));
       setTeamAvatar(gameSessionManager.get("avatar"));
       setSelectedShops(shopIds);
@@ -89,14 +94,14 @@ export default function BuyIngredientsPage() {
         shopIds.includes(shop.id)
       );
       setSelectedShopData(filteredShops);
-      const initialQuantities = {};
-      filteredShops.forEach((shop) => {
-        Object.keys(shop.recipe).forEach((ingredient) => {
-          initialQuantities[`${shop.id}_${ingredient}`] =
-            shop.recipe[ingredient].qty;
-        });
-      });
-      setIngredientQuantities(initialQuantities);
+      // const initialQuantities = {};
+      // filteredShops.forEach((shop) => {
+      //   Object.keys(shop.recipe).forEach((ingredient) => {
+      //     initialQuantities[`${shop.id}_${ingredient}`] =
+      //       shop.recipe[ingredient].qty;
+      //   });
+      // });
+      // setIngredientQuantities(initialQuantities);
       if (
         gameSessionManager.get("currentIteration") ===
           gameSessionManager.get("iterations")?.length - 1 ||
@@ -133,6 +138,7 @@ export default function BuyIngredientsPage() {
     if (newTotalCost <= initialBalance) {
       setIngredientQuantities(updatedQuantities);
     }
+    console.log(updatedQuantities);
   };
 
   const calculateTotalCost = (quantities) => {
@@ -156,12 +162,20 @@ export default function BuyIngredientsPage() {
   };
 
   const handleProceed = () => {
-    const ingredientPurchaseSummary = [];
+    const zeroQuantity = Object.values(ingredientQuantities).filter(
+      (quantity) => quantity === 0
+    );
+    console.log(zeroQuantity);
+    if (zeroQuantity.length!==0) {
+      alert("Ingredient quantity can't be zero!, please choose a quantity");
+      return;
+    }
 
+    const ingredientPurchaseSummary = [];
     for (let shop of selectedShopData) {
       if (!canMakeAtLeastOneItem(shop)) {
         alert(
-          `You must buy enough ingredients to make at least one ${shop.item} from ${shop.name}.`
+          `You must buy enough ingredients to make at least one ${shop.item} from ${shop.name} shop.`
         );
         return;
       }
@@ -263,18 +277,19 @@ export default function BuyIngredientsPage() {
                   {Object.entries(shop.recipe).map(
                     ([ingredient, { qty, cost }]) => {
                       const key = `${shop.id}_${ingredient}`;
-                      const value = ingredientQuantities[key] || qty;
+                      const value = ingredientQuantities[key] || 0;
                       return (
                         <div key={ingredient} className={styles.sliderItem}>
                           <label>
-                            {ingredient}: {value} units
+                            {/* {ingredient} bought: {value} units */}
+                            {ingredient} bought: 
                           </label>
                           <input
-                            type="range"
+                            type="number"
                             min={qty}
                             max={qty * 1000}
-                            value={value}
-                            step={qty * 10}
+                            value={value === 0 ? "" : value}
+                            // step={qty * 10}
                             onChange={(e) =>
                               handleSliderChange(
                                 shop.id,
@@ -283,6 +298,7 @@ export default function BuyIngredientsPage() {
                               )
                             }
                             className={styles.slider}
+                            required
                           />
                         </div>
                       );

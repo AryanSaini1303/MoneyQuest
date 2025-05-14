@@ -135,21 +135,16 @@ export default function SelectShopsPage() {
     setSelectedShops((prev) => {
       let newSelection;
       const newShop = shops.find((s) => s.id === shopId);
-      const currentCost = prev.reduce((acc, id) => {
-        const s = shops.find((shop) => shop.id === id);
-        return acc + s.price;
-      }, 0);
-
       if (prev.includes(shopId)) {
         newSelection = prev.filter((id) => id !== shopId);
       } else {
-        if (currentCost + newShop.price > balance) {
+        console.log(balance);
+        if (newShop.price > balance) {
           alert("Not enough balance to add this shop.");
           return prev;
         }
         newSelection = [...prev, shopId];
       }
-
       setBalance(calculateRemainingBalance(newSelection));
       return newSelection;
     });
