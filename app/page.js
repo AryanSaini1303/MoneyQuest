@@ -28,6 +28,7 @@ export default function Home() {
   };
 
   useEffect(() => {
+    gameSessionManager.clear();
     sessionStorage.clear();
   }, []);
 
