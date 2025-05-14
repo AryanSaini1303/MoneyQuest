@@ -1,36 +1,118 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 💰 MoneyQuest
 
-## Getting Started
+**MoneyQuest** is a web-based educational game designed to help children understand the concepts of **investment, revenue, and profit/loss** in a fun and interactive way. Players buy shops, purchase ingredients, produce items, and sell them to earn virtual money. A leaderboard is managed by the admin to keep the competitive spirit alive!
 
-First, run the development server:
+---
+
+## 🧠 Purpose
+
+MoneyQuest is crafted for young minds to grasp basic financial literacy through gamified learning:
+
+* Learn the **value of money**
+* Understand **profit/loss** concepts
+* Grasp **resource management** and **strategic investment**
+
+---
+
+## 🚀 How to Play
+
+1. **Join a Room**
+   * Use the Room ID to join a game session.
+   * For testing, use Room ID: `R-NB9O6W`
+2. **Buy Shops**
+   * Select from a variety of shops (e.g., Bakery, Juice Bar, etc.)
+   * Each shop has different requirements and profit margins.
+3. **Buy Ingredients**
+   * Purchase required ingredients in the right quantity.
+   * Think wisely – overbuying affects your profits.
+4. **Produce and Sell Items**
+   * Use the ingredients to make shop items.
+   * Sell them at set prices to earn revenue.
+5. **Manage Finances**
+   * Keep track of your balance, spending, and earnings.
+   * Aim for **maximum profit** with strategic choices.
+6. **View Leaderboard (Admin Only)**
+   * The admin can view and showcase the leaderboard.
+   * Sorted by net profit, it helps visualize who's making the best decisions.
+
+---
+
+## 👨‍💼 Tech Stack
+
+* **Frontend** : Next.js, CSS Modules
+* **Backend** : Node.js, Express
+* **Database** : Supabase
+* **Authentication:** Supabase Auth Providers (Google)
+
+---
+
+## 🛠️ Features
+
+* ✅ Real-time multiplayer gameplay via rooms
+* ✅ Ingredient management & production logic
+* ✅ Admin-only leaderboard view
+* ✅ Financial calculations (investment, revenue, profit/loss)
+* ✅ kid-friendly interface
+
+---
+
+## 🧪 Test Room
+
+You can try out the game by joining the following room:
+
+> **Room ID:** `R-NB9O6W`
+
+---
+
+
+
+## 📚 Learnings for Kids
+
+By playing MoneyQuest, children develop:
+
+* 💸 Money management skills
+* 📈 Basic economics intuition
+* 🧠 Strategic thinking & planning
+* 🧾 Real-world simulation of buying/selling
+
+---
+
+## 👤 Admin Capabilities
+
+* Create and manage rooms
+* Monitor gameplay
+* View full leaderboard
+* Announce winners and stats at the end
+
+---
+
+## 📦 Installation
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/your-username/moneyquest.git
+cd moneyquest
+npm install
+npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Make sure the backend server is also running and MongoDB is connected.
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ✨ Contributions
 
-## Learn More
+Feel free to fork the repo and contribute to the game or add more financial concepts like:
 
-To learn more about Next.js, take a look at the following resources:
+* Tax
+* Saving goals
+* Loans and EMIs
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🧠 Built By
 
-## Deploy on Vercel
+Aryan and team ✨
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Crafted with curiosity and purpose to educate the next generation on financial literacy while having fun.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
