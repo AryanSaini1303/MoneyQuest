@@ -390,9 +390,21 @@ const SellItems = () => {
                       }
                     >
                       <strong>
-                        Net Profit: ₹
                         {shop.netProfit.toFixed(2) -
-                          shop.totalInvestment.toFixed(2)}
+                          shop.totalInvestment.toFixed(2) <
+                        0
+                          ? "Loss: "
+                          : "Profit: "}{" "}
+                        ₹
+                        {shop.netProfit.toFixed(2) -
+                          shop.totalInvestment.toFixed(2) <
+                        0
+                          ? -(
+                              shop.netProfit.toFixed(2) -
+                              shop.totalInvestment.toFixed(2)
+                            )
+                          : shop.netProfit.toFixed(2) -
+                            shop.totalInvestment.toFixed(2)}
                       </strong>
                     </p>
                   </div>

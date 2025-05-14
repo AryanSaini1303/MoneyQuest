@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import styles from "./page.module.css";
 import Background from "@/components/Background";
 import { useRouter } from "next/navigation";
+import gameSessionManager from "@/utils/GameSessionManager";
 
 export default function Home() {
   const [roomId, setRoomId] = useState("");
@@ -25,6 +26,10 @@ export default function Home() {
     setError("");
     setSubmit(true);
   };
+
+  useEffect(() => {
+    sessionStorage.clear();
+  }, []);
 
   useEffect(() => {
     if (roomId.length != 0 && submit) {
