@@ -11,7 +11,7 @@ import Loader from "@/components/Loader";
 export default function AdminPanel() {
   const [selectedTab, setSelectedTab] = useState("create");
   const [roomId, setRoomId] = useState("");
-  const admins = ["saini.aryan9999@gmail.com", "yograj.rr@gmail.com", "saurabhgodawat@gmail.com"];
+  const admins = ["saini.aryan9999@gmail.com", "yograj.rr@gmail.com", "saurabhgodawat@gmail.com", "kaustubhrana0908@gmail.com"];
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
