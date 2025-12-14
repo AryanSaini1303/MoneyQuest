@@ -127,7 +127,7 @@ export default function AdminPanel() {
     </div>
   ) : session?.user == null || !admins.includes(session?.user?.email) ? (
     <div className={styles.container}>
-      <Background url={"background.jpg"} />
+      <Background url={"background1.jpeg"} />
       <section className={styles.loginSection}>
         <button className={styles.signInBtn} onClick={signIn}>
           <img src="/images/googleLogo.png" alt="google logo" />
