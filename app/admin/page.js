@@ -1,29 +1,35 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import styles from "./page.module.css";
-import { motion, AnimatePresence } from "framer-motion";
-import { supabase } from "@/lib/supabaseClient";
-import Background from "@/components/Background";
-import { useRouter } from "next/navigation";
-import Loader from "@/components/Loader";
+import { useEffect, useState } from 'react';
+import styles from './page.module.css';
+import { motion, AnimatePresence } from 'framer-motion';
+import { supabase } from '@/lib/supabaseClient';
+import Background from '@/components/Background';
+import { useRouter } from 'next/navigation';
+import Loader from '@/components/Loader';
 
 export default function AdminPanel() {
-  const [selectedTab, setSelectedTab] = useState("create");
-  const [roomId, setRoomId] = useState("");
-  const admins = ["saini.aryan9999@gmail.com", "yograj.rr@gmail.com", "saurabhgodawat@gmail.com", "kaustubhrana0908@gmail.com", "edm.agra2014@gmail.com"];
+  const [selectedTab, setSelectedTab] = useState('create');
+  const [roomId, setRoomId] = useState('');
+  const admins = [
+    'saini.aryan9999@gmail.com',
+    'yograj.rr@gmail.com',
+    'saurabhgodawat@gmail.com',
+    'kaustubhrana0908@gmail.com',
+    'edm.agra2014@gmail.com',
+  ];
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const [roomIdInputTemp, setRoomIdInputTemp] = useState(""); // Temp state for input field value
-  const [roomIdInput, setRoomIdInput] = useState(""); // Final state for room ID when submit is clicked
+  const [roomIdInputTemp, setRoomIdInputTemp] = useState(''); // Temp state for input field value
+  const [roomIdInput, setRoomIdInput] = useState(''); // Final state for room ID when submit is clicked
   const [leaderBoardData, setLeaderBoardData] = useState([]);
   const [sortedLeaderBoard, setSortedLeaderBoard] = useState([]);
   const [leaderboardLoading, setLeaderboardLoading] = useState(false);
 
   const signIn = async () => {
     const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
+      provider: 'google',
       options: {
         redirectTo: window.location.href, // here we mentioned to redirect to the same link which was opened, post authentication.
       },
@@ -37,17 +43,17 @@ export default function AdminPanel() {
   const signOut = async () => {
     const { error } = await supabase.auth.signOut();
     if (error) {
-      console.error("Sign-out error:", error.message);
+      console.error('Sign-out error:', error.message);
     } else {
-      console.log("Successfully signed out");
+      console.log('Successfully signed out');
     }
-    setSelectedTab("create");
+    setSelectedTab('create');
     setSession(null);
     router.replace(window.location.href);
   };
 
   const generateRoomId = () => {
-    const id = "R-" + Math.random().toString(36).substring(2, 8).toUpperCase();
+    const id = 'R-' + Math.random().toString(36).substring(2, 8).toUpperCase();
     setRoomId(id);
   };
 
@@ -56,8 +62,8 @@ export default function AdminPanel() {
       const session = await supabase.auth.getUser();
       setSession(session.data);
       if (session.data.user && !admins.includes(session.data?.user?.email)) {
-        alert("You are not authorised to access the admin panel");
-        setSelectedTab("create");
+        alert('You are not authorised to access the admin panel');
+        setSelectedTab('create');
         setSession(null);
         signOut();
       }
@@ -70,23 +76,23 @@ export default function AdminPanel() {
     if (roomId.length !== 0) {
       const createRoom = async () => {
         try {
-          const response = await fetch("/api/createRoom", {
-            method: "POST",
+          const response = await fetch('/api/createRoom', {
+            method: 'POST',
             headers: {
-              "Content-Type": "application/json",
+              'Content-Type': 'application/json',
             },
             body: JSON.stringify({ roomId }),
           });
           const result = await response.json();
           if (!response.ok) {
-            console.error("Room creation failed:", result.error);
-            alert("Failed to create room.");
-            setRoomId("");
+            console.error('Room creation failed:', result.error);
+            alert('Failed to create room.');
+            setRoomId('');
           } else {
-            console.log("Room created successfully");
+            console.log('Room created successfully');
           }
         } catch (error) {
-          console.error("Error while creating room:", error);
+          console.error('Error while creating room:', error);
         }
       };
       createRoom();
@@ -116,7 +122,7 @@ export default function AdminPanel() {
       setSortedLeaderBoard(
         leaderBoardData
           .map((item) => item.result)
-          .sort((a, b) => b.balance - a.balance)
+          .sort((a, b) => b.balance - a.balance),
       );
     }
   }, [leaderBoardData]);
@@ -127,7 +133,7 @@ export default function AdminPanel() {
     </div>
   ) : session?.user == null || !admins.includes(session?.user?.email) ? (
     <div className={styles.container}>
-      <Background url={"background1.jpeg"} />
+      <Background url={'background1.jpeg'} />
       <section className={styles.loginSection}>
         <button className={styles.signInBtn} onClick={signIn}>
           <img src="/images/googleLogo.png" alt="google logo" />
@@ -138,23 +144,23 @@ export default function AdminPanel() {
   ) : (
     <div className={styles.container}>
       <Background
-        url={"adminBackground.jpg"}
-        styleObj={{ filter: "blur(2px)" }}
+        url={'adminBackground.jpg'}
+        styleObj={{ filter: 'blur(2px)' }}
       />
       <div className={styles.sidebar}>
         <button
           className={`${styles.tabButton} ${
-            selectedTab === "create" ? styles.active : ""
+            selectedTab === 'create' ? styles.active : ''
           }`}
-          onClick={() => setSelectedTab("create")}
+          onClick={() => setSelectedTab('create')}
         >
           Create Room
         </button>
         <button
           className={`${styles.tabButton} ${
-            selectedTab === "leaderboard" ? styles.active : ""
+            selectedTab === 'leaderboard' ? styles.active : ''
           }`}
-          onClick={() => setSelectedTab("leaderboard")}
+          onClick={() => setSelectedTab('leaderboard')}
         >
           Display Leaderboard
         </button>
@@ -164,7 +170,7 @@ export default function AdminPanel() {
       </div>
       <div className={styles.content}>
         <AnimatePresence mode="wait">
-          {selectedTab === "create" && (
+          {selectedTab === 'create' && (
             <motion.div
               key="create"
               className={styles.formWrapper}
@@ -191,7 +197,7 @@ export default function AdminPanel() {
             </motion.div>
           )}
 
-          {selectedTab === "leaderboard" && (
+          {selectedTab === 'leaderboard' && (
             <motion.div
               key="leaderboard-input"
               className={styles.formWrapper}
@@ -214,13 +220,13 @@ export default function AdminPanel() {
                   className={styles.generateBtn}
                   onClick={() => {
                     if (!roomIdInputTemp.trim()) {
-                      alert("Please enter a valid Room ID.");
+                      alert('Please enter a valid Room ID.');
                       return;
                     }
                     setRoomIdInput(roomIdInputTemp); // Set final roomIdInput when submit is clicked
                     console.log(
-                      "Fetching leaderboard for room:",
-                      roomIdInputTemp
+                      'Fetching leaderboard for room:',
+                      roomIdInputTemp,
                     );
                   }}
                 >
@@ -230,7 +236,7 @@ export default function AdminPanel() {
             </motion.div>
           )}
 
-          {selectedTab === "leaderboard" && leaderBoardData.length !== 0 && (
+          {selectedTab === 'leaderboard' && leaderBoardData.length !== 0 && (
             <motion.div
               key="leaderboard-table"
               className={styles.table}
