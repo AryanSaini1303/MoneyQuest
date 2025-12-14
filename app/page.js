@@ -60,7 +60,7 @@ export default function Home() {
   return (
     <div className="wrapper">
       <div className={styles.container}>
-        <Background url={"background.jpg"} />
+        <Background url={"background1.jpeg"} />
         <section className={styles.roomSection}>
           <form onSubmit={handleSubmit} className={styles.formContainer}>
             <h2 className={styles.title}>Enter Room ID</h2>

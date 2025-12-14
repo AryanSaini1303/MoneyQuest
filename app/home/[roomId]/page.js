@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import styles from './page.module.css';
-import { useRouter } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import Background from '@/components/Background';
 
@@ -13,40 +13,56 @@ export default function Home() {
   const router = useRouter();
   const [roomId, setRoomId] = useState('');
   const [loading, setLoading] = useState(false);
+  const params = useParams();
+  const [resolved, setResolved] = useState(false);
+
+  // 1️⃣ Resolve roomId (URL → sessionStorage)
+  useEffect(() => {
+    const idFromUrl = params?.roomId;
+    const idFromSession = sessionStorage.getItem('roomId');
+    const finalRoomId = idFromUrl || idFromSession;
+    if (finalRoomId) {
+      setRoomId(finalRoomId);
+      sessionStorage.setItem('roomId', finalRoomId);
+    }
+    setResolved(true);
+  }, [params]);
 
   useEffect(() => {
-    if (roomId.length != 0) {
-      setLoading(true);
-      const validateRoom = async () => {
+    if (!roomId) return;
+    const validateRoom = async () => {
+      try {
+        setLoading(true);
         const res = await fetch('/api/validateRoom', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ roomId }),
         });
         const data = await res.json();
-        // console.log(data);
-        sessionStorage.setItem('roomId', roomId);
         if (data.valid) {
-          router.replace(`/home`); // "router.replace" is used here and in all the further navigation as we don't want the user the to go back and if the browser window doesn't have history of navigation then it won't be able to go back. "router.replace" does just that, it adds a page/url to the navigation without adding it to the navigation history
+          router.replace(`/home/${roomId}`);
+          setLoading(false)
         } else {
-          alert('Wrong room id!, please try again');
+          alert('Wrong room id! Please try again.');
           setLoading(false);
         }
+      } catch (err) {
+        console.error(err);
+        alert('Something went wrong');
         setLoading(false);
-      };
-      validateRoom();
-    } else {
-      setRoomId(sessionStorage.getItem('roomId'));
-    }
-  }, []);
+      }
+    };
+    validateRoom();
+  }, [roomId, router]);
   // this can be used to fetch the data received through params in the url, for that this component will recieve something which can be destructured as "{params}" to get "params" i.e. export default function Home({params}){}
 
   useEffect(() => {
-    if (roomId == null) {
-      alert('Unauthorised!');
+    if (!resolved) return;
+    if (!roomId) {
+      alert('Unauthorised access');
       router.replace('/');
     }
-  }, [roomId]);
+  }, [resolved, roomId, router]);
 
   function handleNameChange(e) {
     // console.log(e.target.value);
