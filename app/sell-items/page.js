@@ -18,7 +18,7 @@ const RECIPES = {
   },
   Lemonade: {
     Lemons: { qty: 1 },
-    Sugar: { qty: 1 },
+    Sugar: { qty: 2 },
     Ice: { qty: 1 },
   },
   "Ice Cream": {
@@ -41,12 +41,12 @@ const OPERATIONAL_COSTS = {
 };
 
 const SEASONAL_BOOSTS = {
-  Coffee: { season: "Winter", boostMultiplier: 1.2, penaltyMultiplier: 0.9 },
-  Lemonade: { season: "Summer", boostMultiplier: 1.2, penaltyMultiplier: 0.85 },
+  Coffee: { season: "Winter", boostMultiplier: 1.3, penaltyMultiplier: 0.8 },
+  Lemonade: { season: "Summer", boostMultiplier: 1.2, penaltyMultiplier: 0.7 },
   "Ice Cream": {
     season: "Summer",
-    boostMultiplier: 1.25,
-    penaltyMultiplier: 0.8,
+    boostMultiplier: 1.3,
+    penaltyMultiplier: 0.7,
   },
 };
 
@@ -76,9 +76,9 @@ const calculateMaxItems = (ingredients, recipe) => {
 
 const getSalePercentage = (price, shopName) => {
   const { ideal, low, high } = PRICE_RANGES[shopName];
-  if (price < low) return 1;
+  if (price < low) return 0.9;
   if (price >= ideal[0] && price <= ideal[1]) {
-    return 0.9 + Math.random() * 0.1;
+    return 0.9 + Math.random() * 0.6;
   }
   if (price > ideal[1] && price <= high) {
     const range = high - ideal[1];
